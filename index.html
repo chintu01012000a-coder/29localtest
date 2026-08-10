@@ -1,60 +1,415 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Call Break Local</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>29 — Trump &amp; Trick</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --felt:#173B2E; --felt-light:#1F4A36; --ivory:#F7F2E7; --ink:#22271F;
-    --gold:#C9A227; --muted:#93A79A; --danger:#C0463C; --success:#4C8C5D;
-  }
-  *{box-sizing:border-box;}
-  body{margin:0;font-family:'Manrope',sans-serif;background:var(--felt);color:var(--ivory);min-height:100vh;}
-  .wrap{max-width:720px;margin:0 auto;padding:20px 16px 60px;}
-  h1{font-family:'Fraunces',serif;font-weight:600;font-size:28px;margin:0 0 4px;color:var(--gold);}
-  .sub{color:var(--muted);font-size:14px;margin-bottom:24px;}
-  input[type=text]{font-family:inherit;font-size:15px;padding:10px 12px;border-radius:8px;border:1px solid var(--felt-light);background:var(--felt-light);color:var(--ivory);width:100%;}
-  button{font-family:inherit;font-size:14px;font-weight:700;padding:9px 16px;border-radius:8px;border:none;background:var(--gold);color:var(--ink);cursor:pointer;}
-  button.secondary{background:var(--felt-light);color:var(--ivory);}
-  button:disabled{opacity:0.4;cursor:not-allowed;}
-  .card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:72px;height:99px;border-radius:10px;background:var(--ivory);color:var(--ink);font-family:'Fraunces',serif;font-weight:600;font-size:23px;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.25);}
-  .card.disabled{opacity:0.3;cursor:not-allowed;}
-  .card.back{background:var(--felt-light);color:var(--muted);font-size:27px;border:1px dashed var(--muted);}
-  .row{display:flex;gap:8px;flex-wrap:wrap;}
-  .col{display:flex;flex-direction:column;gap:8px;}
-  .center{text-align:center;}
-  .table{display:grid;grid-template-columns:1fr 2fr 1fr;grid-template-rows:auto auto auto;grid-template-areas:". top ." "left mid right" ". bottom .";gap:10px;align-items:center;margin:18px 0;}
-  .scoreboard-wrap{position:relative;}
-  .trump-corner{position:absolute;top:-14px;right:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;width:78px;height:107px;border-radius:10px;background:var(--ivory);box-shadow:0 3px 0 rgba(0,0,0,0.3);font-family:'Fraunces',serif;font-weight:700;}
-  .trump-corner .rank{font-size:22px;color:var(--ink);line-height:1;}
-  .trump-corner .suit{font-size:40px;line-height:1;}
-  .seat{text-align:center;padding:8px;border-radius:10px;}
-  .seat.active{background:rgba(201,162,39,0.18);border:1px solid var(--gold);}
-  .seatname{font-weight:700;font-size:14px;}
-  .seatinfo{font-size:12px;color:var(--muted);margin-top:2px;}
-  .badge{font-size:10px;padding:1px 6px;border-radius:999px;background:rgba(201,162,39,0.3);color:var(--gold);margin-left:4px;}
-  .panel{background:var(--felt-light);border-radius:10px;padding:14px;margin-bottom:16px;}
-  table.hist{width:100%;font-size:12px;border-collapse:collapse;}
-  table.hist td{padding:4px 6px;}
-  .scoreboard{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-  .scorebox{background:var(--felt-light);border-radius:10px;padding:8px 14px;text-align:center;min-width:70px;}
-  .scorebox .n{font-size:18px;font-weight:800;}
-  .scorebox .l{font-size:11px;color:var(--muted);}
-  .linkbox{display:flex;gap:8px;align-items:center;}
-  .linkbox input{flex:1;}
-  ::placeholder{color:var(--muted);}
-</style>
-</head>
-<body>
-<div class="wrap" id="app"></div>
-
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+:root{
+  --felt-1:#0b3d2e;
+  --felt-2:#0e4a37;
+  --cream:#f3ead8;
+  --ink:#1c1712;
+  --gold:#c9a227;
+  --gold-soft:#e6c65c;
+  --red:#a83a3a;
+  --teal:#2f6f62;
+  --line: rgba(243,234,216,0.14);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;background:var(--felt-1);
+  font-family:'Inter',sans-serif; color:var(--cream); overflow:hidden;
+  overscroll-behavior:none;}
+body{
+  background:
+    radial-gradient(ellipse at 50% 20%, var(--felt-2), var(--felt-1) 70%);
+}
+.wrap{
+  position:relative; width:100%; display:flex; flex-direction:column;
+  height:100vh; height:100svh; height:100dvh; height:calc(var(--vh, 1vh) * 100);
+  overflow:hidden;
+}
+
+/* ---------------- LANDING / LOBBY SCREENS ---------------- */
+.screen{
+  position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; padding:22px; text-align:center; z-index:100;
+  height:100vh; height:100svh; height:100dvh; height:calc(var(--vh, 1vh) * 100);
+  overflow-y:auto;
+}
+.screen.hidden{display:none;}
+.brandTitle{font-family:'Cinzel',serif; font-weight:700; letter-spacing:2px; color:var(--gold-soft); font-size:26px; margin-bottom:2px;}
+.brandSub{font-size:12px; opacity:0.75; margin-bottom:26px;}
+.card3{
+  background:rgba(0,0,0,0.25); border:1px solid var(--line); border-radius:14px;
+  padding:20px 18px; width:100%; max-width:340px; display:flex; flex-direction:column; gap:12px;
+}
+.card3 h2{font-family:'Cinzel',serif; font-size:16px; color:var(--gold-soft); margin:0 0 2px;}
+.card3 p{font-size:12.5px; opacity:0.8; margin:0; line-height:1.5;}
+.field{
+  background:rgba(0,0,0,0.3); border:1px solid var(--line); border-radius:9px;
+  padding:11px 12px; color:var(--cream); font-size:14px; font-family:'Inter'; width:100%;
+}
+.field::placeholder{color:rgba(243,234,216,0.45);}
+.stackbtns{display:flex; flex-direction:column; gap:9px;}
+.btn{
+  border:1px solid var(--gold); background:rgba(201,162,39,0.12); color:var(--cream);
+  padding:11px 14px; border-radius:9px; font-size:13.5px; font-weight:600; font-family:'Inter';
+}
+.btn.primary{ background:var(--gold); color:var(--ink);}
+.btn.ghost{ border-color:var(--line); background:rgba(0,0,0,0.2);}
+.btn.small{padding:7px 11px; font-size:12px;}
+.btn:disabled{opacity:0.35;}
+.rowbtns{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+.linkbox{
+  display:flex; gap:6px; align-items:center; background:rgba(0,0,0,0.35);
+  border:1px dashed var(--line); border-radius:9px; padding:8px 10px; font-size:11.5px;
+  word-break:break-all;
+}
+.seatgrid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; max-width:340px; margin:0 auto;}
+.seattile{
+  border:1px solid var(--line); border-radius:10px; padding:10px 8px; background:rgba(0,0,0,0.25);
+  font-size:12px; display:flex; flex-direction:column; gap:3px; min-height:56px; justify-content:center;
+}
+.seattile.mine{border-color:var(--gold-soft);}
+.seattile.selectable{cursor:pointer;}
+.seattile.selected{border-color:var(--gold); background:rgba(201,162,39,0.18);}
+.seattile .teamtag{font-size:9px; letter-spacing:1px; opacity:0.6; text-transform:uppercase;}
+.seattile .occ{font-weight:600; font-size:13px;}
+.teamA{color:#9fd7c2;}
+.teamB{color:#e0a5a5;}
+.smallnote{font-size:11px; opacity:0.65; line-height:1.5;}
+
+/* ---------------- top bar ---------------- */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 12px; z-index:20;
+  border-bottom:1px solid var(--line);
+  background:rgba(0,0,0,0.15);
+}
+.brand{font-family:'Cinzel',serif; font-weight:700; letter-spacing:2px; font-size:15px; color:var(--gold-soft);}
+.brand span{color:var(--cream); font-weight:600; letter-spacing:0;}
+.scorepods{display:flex; gap:8px; align-items:center;}
+.pod{
+  display:flex; flex-direction:column; align-items:center;
+  padding:3px 10px; border-radius:8px; border:1px solid var(--line);
+  background:rgba(0,0,0,0.2); min-width:52px;
+}
+.pod .lbl{font-size:9px; letter-spacing:1px; opacity:0.7; text-transform:uppercase;}
+.pod .val{font-family:'Cinzel',serif; font-size:18px; font-weight:700; color:var(--gold-soft);}
+.pod .val::before{content:"❤️ "; font-size:14px;}
+.menubtn{
+  background:none; border:1px solid var(--line); color:var(--cream);
+  border-radius:7px; padding:5px 9px; font-size:11px; font-family:'Inter';
+}
+.menubtn.hiddenBtn{visibility:hidden;}
+
+/* ---- board / boxes for double board mode ---- */
+.boardstrip{display:flex; gap:6px; padding:6px 12px; background:rgba(0,0,0,0.12); border-bottom:1px solid var(--line);}
+.box{flex:1; display:flex; gap:4px;}
+.cell{flex:1; height:16px; border-radius:3px; border:1px solid var(--line); opacity:0.35;}
+.cell.red{background:var(--red);}
+.cell.black{background:#111; }
+.cell.filled{opacity:1;}
+.boxlabel{font-size:9px; opacity:0.6; align-self:center; width:70px;}
+
+/* ---- table ---- */
+.table{
+  position:relative; flex:1; min-height:0;
+  display:grid;
+  grid-template-rows: minmax(56px,74px) minmax(0,1fr) minmax(100px,150px);
+  padding:6px 8px 4px;
+}
+.seat{
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  font-size:11px; position:relative;
+}
+.seat .name{
+  font-weight:600; padding:2px 9px; border-radius:20px;
+  background:rgba(0,0,0,0.25); border:1px solid var(--line);
+  max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.seat.active .name{ border-color:var(--gold); color:var(--gold-soft); box-shadow:0 0 10px rgba(201,162,39,0.35);}
+.seat.bidder .name::after{content:" ★"; color:var(--gold-soft);}
+.seat.dealer .name::before{content:"D "; color:var(--teal); font-weight:800; background:var(--gold-soft); border-radius:50%; padding:0 4px; margin-right:2px;}
+.seat .cardback-row{display:flex;}
+.cardback{
+  width:22px; height:31px; margin-left:-13px; border-radius:4px;
+  background:linear-gradient(135deg, var(--teal), #1c4b40);
+  border:1px solid rgba(243,234,216,0.35);
+}
+.cardback:first-child{margin-left:0;}
+
+#seatTop{ align-self:start; justify-self:center; }
+.midRow{ display:flex; align-items:center; justify-content:space-between; position:relative;}
+#seatLeft, #seatRight{ align-self:center; }
+
+.centerTrick{
+  flex:1; position:relative; display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  min-height:180px;
+}
+.trickslot{
+  width:44px; height:62px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  align-self:center; justify-self:center;
+  transition: all .25s ease;
+}
+#slotTop{ grid-row:1; grid-column:2; }
+#slotLeft{ grid-row:2; grid-column:1; }
+#slotRight{ grid-row:2; grid-column:3; }
+#slotBottom{ grid-row:3; grid-column:2; }
+
+.trumpseed{
+  position:absolute; top:100%; left:50%; transform:translateX(-50%); margin-top:6px;
+  width:45px; height:63px; border-radius:7px;
+  background:linear-gradient(135deg, #3a2b0e, #1c1712);
+  border:2px solid var(--gold);
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; text-align:center; color:var(--gold-soft); font-family:'Cinzel';
+  z-index:17;
+}
+.trumpseed.revealed{ background:var(--cream); color:var(--ink); }
+.trumpseed.attach-above{ top:auto; bottom:100%; margin-top:0; margin-bottom:6px; }
+.centerActions{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:16;
+  display:flex; flex-direction:column; gap:6px; align-items:center;
+}
+.centerActions:empty{ display:none; }
+.centerActions .btn{
+  box-shadow:0 4px 10px rgba(0,0,0,0.4);
+}
+.tableToast{
+  position:absolute; left:50%; top:-46px; transform:translate(-50%,-8px);
+  background:rgba(201,162,39,0.95); color:var(--ink); font-weight:700; font-size:12px;
+  padding:8px 14px; border-radius:20px; white-space:nowrap; z-index:20;
+  opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease;
+  box-shadow:0 4px 10px rgba(0,0,0,0.4);
+}
+.tableToast.show{ opacity:1; transform:translate(-50%,0); }
+
+/* ---- hand ---- */
+.handzone{ display:flex; flex-direction:column; justify-content:flex-end; padding-bottom:6px;}
+.hand{
+  display:flex; flex-wrap:wrap; justify-content:center; align-content:flex-end;
+  gap:5px 4px; padding:4px 6px; max-width:320px; margin:0 auto;
+}
+.card{
+  width:72px; height:106px; background:var(--cream); border-radius:9px;
+  box-shadow:0 3px 7px rgba(0,0,0,0.4);
+  border:1px solid rgba(0,0,0,0.15); flex-shrink:0;
+  display:flex; flex-direction:column; justify-content:space-between; padding:5px 6px;
+  color:var(--ink); font-weight:700; position:relative; transition: transform .15s ease;
+}
+.card.red{color:var(--red);}
+.card.playable{ transform:translateY(-10px); box-shadow:0 8px 14px rgba(0,0,0,0.5);}
+.card.disabled{ filter:grayscale(0.6) brightness(0.75);}
+.card .rank{font-size:14px; font-family:'Cinzel',serif;}
+.card .suit{font-size:21px; align-self:center;}
+.card .rank.bottom{ align-self:flex-end; transform:rotate(180deg); }
+
+.trickcard{ width:52px; height:74px; }
+.trickcard .rank{font-size:13px;}
+.trickcard .suit{font-size:17px;}
+
+/* ---- action panel ---- */
+.panel{
+  position:absolute; left:0; right:0; bottom:0; z-index:30;
+  background:linear-gradient(180deg, rgba(11,61,46,0), rgba(6,32,24,0.96) 30%);
+  padding:8px 10px 10px; display:flex; flex-direction:column; gap:8px;
+  align-items:center;
+}
+.panel .msg{font-size:12.5px; text-align:center; color:var(--gold-soft); font-family:'Cinzel',serif; min-height:16px;}
+.btn.suit-S,.btn.suit-C{color:var(--cream);}
+.btn.suit-H,.btn.suit-D{color:#ffb3b3;}
+
+.log{
+  position:absolute; inset:0; width:auto; max-height:none; overflow:auto;
+  background:rgba(6,20,15,0.98); border:none; border-radius:0; padding:0;
+  font-size:14px; line-height:1.8; z-index:70; display:none;
+}
+.log.show{display:block;}
+.logHeader{
+  position:sticky; top:0; display:flex; align-items:center; justify-content:space-between;
+  background:rgba(0,0,0,0.95); margin:0; padding:14px 16px;
+  border-bottom:2px solid var(--gold); font-family:'Cinzel',serif; color:var(--gold-soft); font-size:17px;
+}
+.logClose{
+  background:none; border:1px solid var(--gold); color:var(--cream); border-radius:8px;
+  width:36px; height:36px; font-size:16px; line-height:1; cursor:pointer;
+}
+#logLines, #historyLines{ padding:14px 16px 40px; }
+#logLines > div, #historyLines > div{ padding:7px 0; border-bottom:1px solid var(--line); }
+.overlay{
+  position:absolute; top:0; left:0; right:0; bottom:235px; background:rgba(0,0,0,0.55); z-index:50;
+  display:flex; align-items:center; justify-content:center;
+}
+.overlay .card2{
+  background:var(--felt-2); border:1px solid var(--gold); border-radius:14px;
+  padding:22px 24px; max-width:320px; max-height:85vh; overflow-y:auto; text-align:center;
+}
+.overlay h2{font-family:'Cinzel',serif; color:var(--gold-soft); margin:0 0 8px;}
+.overlay p{font-size:13px; opacity:0.9; line-height:1.5; white-space:pre-line;}
+.hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<!-- ============ LANDING / LOBBY SCREENS ============ -->
+<div class="screen" id="screenHome">
+  <div class="brandTitle">29 <span style="color:var(--cream)">Trump &amp; Trick</span></div>
+  <div class="brandSub">Multiplayer card game for you and your friends</div>
+  <div class="card3">
+    <div class="stackbtns">
+      <button class="btn primary" id="btnHostNew">Host a New Game</button>
+      <button class="btn ghost" id="btnJoinCode">Join with a Code</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen hidden" id="screenName">
+  <div class="card3">
+    <h2 id="nameScreenTitle">Enter your name</h2>
+    <input class="field" id="nameInput" placeholder="Your name" maxlength="18" autocomplete="off">
+    <button class="btn primary" id="btnNameContinue">Continue</button>
+  </div>
+</div>
+
+<div class="screen hidden" id="screenHostSetup">
+  <div class="card3">
+    <h2>Who's playing?</h2>
+    <p>Choose your table mix — you can share the link with friends after.</p>
+    <div class="stackbtns">
+      <button class="btn" data-cpu="0">4 Friends (no computers)</button>
+      <button class="btn" data-cpu="1">3 Friends + 1 Computer</button>
+      <button class="btn" data-cpu="2">2 Friends + 2 Computers</button>
+      <button class="btn" data-cpu="3">1 Friend + 3 Computers</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen hidden" id="screenLobby">
+  <div class="card3" style="max-width:380px;">
+    <h2 id="lobbyTitle">Lobby</h2>
+    <div id="lobbyLinkWrap"></div>
+    <div id="lobbyPlayerList" class="smallnote" style="text-align:left;"></div>
+    <div id="lobbySeatWrap"></div>
+    <div id="lobbyBoardModeWrap"></div>
+    <div id="lobbyStartWrap"></div>
+    <p class="smallnote" id="lobbyWaitNote"></p>
+  </div>
+</div>
+
+<!-- ============ GAME SCREEN ============ -->
+<div class="wrap hidden" id="wrap">
+  <div class="topbar">
+    <div class="brand">29 <span>Trump &amp; Trick</span></div>
+    <div class="scorepods">
+      <div class="pod" id="podA"><div class="lbl" id="teamAlabel">Team A</div><div class="val" id="scoreA">0</div></div>
+      <div class="pod" id="podB"><div class="lbl" id="teamBlabel">Team B</div><div class="val" id="scoreB">0</div></div>
+      <div class="pod hidden" id="podUnified"><div class="lbl" id="unifiedLabel">Score</div><div class="val" id="unifiedScore">0</div></div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
+      <button class="menubtn" id="newGameBtn">Cancel Round</button>
+      <button class="menubtn" id="logToggle">Log</button>
+      <button class="menubtn" id="historyToggle">History</button>
+    </div>
+  </div>
+
+  <div class="boardstrip" id="boardstrip"></div>
+
+  <div class="table" id="tableArea">
+    <div class="seat" id="seatTop">
+      <div class="name">Top</div>
+      <div class="cardback-row" id="cbTop"></div>
+    </div>
+
+    <div class="midRow">
+      <div class="seat" id="seatLeft">
+        <div class="name">Left</div>
+        <div class="cardback-row" id="cbLeft"></div>
+      </div>
+
+      <div class="centerTrick" id="centerTrick">
+        <div class="trumpseed" id="trumpSeed">trump<br>hidden</div>
+        <div class="centerActions" id="centerActions"></div>
+        <div class="tableToast" id="tableToast"></div>
+        <div class="trickslot" id="slotBottom"></div>
+        <div class="trickslot" id="slotLeft"></div>
+        <div class="trickslot" id="slotTop"></div>
+        <div class="trickslot" id="slotRight"></div>
+      </div>
+
+      <div class="seat" id="seatRight">
+        <div class="name">Right</div>
+        <div class="cardback-row" id="cbRight"></div>
+      </div>
+    </div>
+
+    <div class="seat" id="seatBottom" style="justify-self:center;">
+      <div class="name">You</div>
+    </div>
+  </div>
+
+  <div class="handzone">
+    <div class="hand" id="handRow"></div>
+  </div>
+
+  <div class="log" id="logBox">
+    <div class="logHeader">
+      <span>Log</span>
+      <button class="logClose" id="logClose">✕</button>
+    </div>
+    <div id="logLines"></div>
+  </div>
+
+  <div class="log" id="historyBox">
+    <div class="logHeader">
+      <span>Round History</span>
+      <button class="logClose" id="historyClose">✕</button>
+    </div>
+    <div id="historyLines"></div>
+  </div>
+
+  <div class="panel">
+    <div class="msg" id="panelMsg">—</div>
+    <div class="rowbtns" id="panelBtns"></div>
+  </div>
+
+  <div class="overlay hidden" id="overlay">
+    <div class="card2">
+      <h2 id="ovTitle"></h2>
+      <p id="ovText"></p>
+      <div class="rowbtns" id="ovBtns" style="margin-top:10px;"></div>
+    </div>
+  </div>
+</div>
+
 <script>
+/* ================= NOTES ON ASSUMPTIONS =================
+   - Turn order is anticlockwise: You(bottom) -> Right -> Top(partner) -> Left -> You.
+   - Trump suit is chosen freely by the bid winner, not restricted to their own 4 cards.
+   - Singles/Double (rules 9-11) give a separate +-3 / +-6 game-point swing on top of
+     the normal bid result.
+   - MULTIPLAYER TRUST MODEL: like your Call Break app, all game state (including the
+     secret trump and other players' hands) is synced to every device via Firestore so
+     the app can work at all without a server-side referee. Nothing is shown in the UI
+     before it should be, but a technically curious friend could in principle open
+     devtools and inspect it early. Fine for a friend-group game; flag it if you ever
+     want a hardened version (would need a Cloud Function as a real referee).
+   - Only the HOST's browser drives computer players' decisions and automatic steps
+     (dealing, redeal checks, trick resolution timing) to keep everyone in sync and
+     avoid two devices disagreeing about a random AI decision. If the host closes their
+     tab mid-game, the game will stall — that's a known limitation for a future pass
+     (your Call Break app's watchdog/heartbeat would be the model to copy).
+   ========================================================== */
+
 const firebaseConfig = {
   apiKey: "AIzaSyDKgkuUHrkBYz7Ze47q35kemuZBupcVB_M",
   authDomain: "callbreak-local.firebaseapp.com",
@@ -63,492 +418,1818 @@ const firebaseConfig = {
   messagingSenderId: "697439144169",
   appId: "1:697439144169:web:002d7a680d81b6c8788878"
 };
-
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 const db = firebase.firestore();
+const auth = firebase.auth();
+const ROOMS = 'game29_rooms';
 
-const SUITS=[{key:'S',sym:'\u2660',red:false},{key:'H',sym:'\u2665',red:true},{key:'D',sym:'\u2666',red:true},{key:'C',sym:'\u2663',red:false}];
-function suitInfo(k){return SUITS.find(s=>s.key===k);}
-function rankLabel(r){if(r===14)return 'A';if(r===13)return 'K';if(r===12)return 'Q';if(r===11)return 'J';return String(r);}
-function newDeck(){const d=[];SUITS.forEach(s=>{for(let r=2;r<=14;r++)d.push({suit:s.key,rank:r});});return d;}
-function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function sortHand(hand,trump){const order=[trump,...SUITS.map(s=>s.key).filter(k=>k!==trump)];return hand.slice().sort((a,b)=>{const oa=order.indexOf(a.suit),ob=order.indexOf(b.suit);if(oa!==ob)return oa-ob;return a.rank-b.rank;});}
-function currentWinner(trick,trump){const led=trick[0].card.suit;let best=trick[0];for(let i=1;i<trick.length;i++){const entry=trick[i];const c=entry.card;if(c.suit!==led&&c.suit!==trump)continue;const b=best.card;if(c.suit===trump&&b.suit!==trump){best=entry;}else if(c.suit===trump&&b.suit===trump){if(c.rank>b.rank)best=entry;}else if(c.suit===led&&b.suit===led){if(c.rank>b.rank)best=entry;}}return best;}
-function computeValidCards(hand,trick,trump){
-  if(trick.length===0)return hand.slice();
-  const led=trick[0].card.suit;
-  const ofLed=hand.filter(c=>c.suit===led);
-  if(ofLed.length>0){
-    const w=currentWinner(trick,trump).card;
-    if(w.suit===trump&&led!==trump){return ofLed;}
-    const beating=ofLed.filter(c=>c.rank>w.rank);
-    return beating.length>0?beating:ofLed;
-  }else{
-    const trumps=hand.filter(c=>c.suit===trump);
-    const nonTrumps=hand.filter(c=>c.suit!==trump);
-    const trumpsInTrick=trick.filter(e=>e.card.suit===trump).map(e=>e.card);
-    if(trumpsInTrick.length>0){
-      const bestTrumpRank=Math.max(...trumpsInTrick.map(c=>c.rank));
-      const overTrumps=trumps.filter(c=>c.rank>bestTrumpRank);
-      if(overTrumps.length>0)return overTrumps;
-      if(nonTrumps.length>0)return nonTrumps;
-      return trumps;
-    }else{
-      if(trumps.length>0)return trumps;
-      return hand.slice();
-    }
+let myUid = null;
+let ROOM_CODE = null;
+let ROOM = null;
+let MY_SEAT = null;
+let IS_HOST = false;
+let selectedSeatTile = null;
+let unsubRoom = null, unsubState = null;
+
+const SUITS = ['S','H','D','C'];
+const SUIT_SYM = {S:'♠', H:'♥', D:'♦', C:'♣'};
+const SUIT_NAME = {S:'Spades', H:'Hearts', D:'Diamonds', C:'Clubs'};
+const RED_SUITS = ['H','D'];
+const RANK_ORDER = ['7','8','Q','K','10','A','9','J'];
+const RANK_POINTS = {'7':0,'8':0,'Q':0,'K':0,'10':1,'A':1,'9':2,'J':3};
+
+const ORDER = [0,3,2,1];
+const PARTNER = {0:2,1:3,2:0,3:1};
+const TEAM = {0:'A',2:'A',1:'B',3:'B'};
+
+function nextSeat(s){ const i = ORDER.indexOf(s); return ORDER[(i+1)%4]; }
+function prevSeat(s){ const i = ORDER.indexOf(s); return ORDER[(i+3)%4]; }
+
+function freshDeck(){
+  const d = [];
+  for(const s of SUITS) for(const r of RANK_ORDER) d.push({s,r,id:s+r});
+  return d;
+}
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function rankIdx(r){ return RANK_ORDER.indexOf(r); }
+
+let G = null;
+let PLAYABLE_IDS = [];
+
+/* ---------------- SEAT / IDENTITY HELPERS ---------------- */
+function isComputerSeat(seat){ return ROOM && ROOM.seats[seat] && ROOM.seats[seat].type==='cpu'; }
+function humanSeatsList(){
+  if(!ROOM || !ROOM.seats) return MY_SEAT!=null ? [MY_SEAT] : [];
+  return [0,1,2,3].filter(s=>!isComputerSeat(s));
+}
+function seatLabel(seat){
+  if(seat===MY_SEAT) return 'You';
+  if(!ROOM || !ROOM.seats[seat]) return '...';
+  return ROOM.seats[seat].name || (ROOM.seats[seat].type==='cpu' ? 'Computer' : 'Player');
+}
+function pname(seat){
+  // Like seatLabel, but never returns "You" — for the shared log, which
+  // every player views, so entries must read the same for everyone.
+  if(!ROOM || !ROOM.seats[seat]) return '...';
+  return ROOM.seats[seat].name || (ROOM.seats[seat].type==='cpu' ? 'Computer' : 'Player');
+}
+function authorizedFor(seat){
+  if(isComputerSeat(seat)) return IS_HOST;
+  return seat===MY_SEAT;
+}
+function slotOf(seat){
+  if(seat===MY_SEAT) return 'Bottom';
+  if(seat===nextSeat(MY_SEAT)) return 'Right';
+  if(seat===PARTNER[MY_SEAT]) return 'Top';
+  return 'Left';
+}
+
+/* ---------------- FIREBASE PLUMBING ---------------- */
+function pushState(){
+  if(!ROOM_CODE) return;
+  G.seq = (G.seq||0) + 1;
+  db.collection(ROOMS).doc(ROOM_CODE).collection('state').doc('current')
+    .set({ blob: JSON.stringify(G), updatedAt: Date.now() })
+    .catch(e=>{ console.error('pushState error', e); alert('Could not sync game state: '+e.message); });
+}
+function subscribeState(){
+  if(unsubState) unsubState();
+  unsubState = db.collection(ROOMS).doc(ROOM_CODE).collection('state').doc('current')
+    .onSnapshot(doc=>{
+      if(!doc.exists) return;
+      const data = doc.data();
+      const incoming = JSON.parse(data.blob);
+      if(G && typeof G.seq==='number' && typeof incoming.seq==='number' && incoming.seq < G.seq) return;
+      G = incoming;
+      lastStateChangeAt = Date.now();
+      try { renderAll(); } catch(e){ console.error('renderAll failed', e); }
+      try { resumeFlow(); } catch(e){ console.error('resumeFlow failed', e); }
+    }, e=>{ console.error('subscribeState error', e); alert('Lost connection to the game: '+e.message); });
+  if(!watchdogTimer){
+    watchdogTimer = setInterval(()=>{
+      if(!G || !G.round || !IS_HOST) return;
+      if(Date.now() - lastStateChangeAt > 6000){
+        lastStateChangeAt = Date.now(); // avoid repeated nudges in a tight loop
+        try { resumeFlow(); } catch(e){ console.error('watchdog resumeFlow failed', e); }
+      }
+    }, 3000);
   }
 }
-function estimateBid(hand,trump){let score=0;hand.forEach(c=>{if(c.suit===trump)score+=c.rank>=12?1.2:0.6;else if(c.rank===14)score+=1;else if(c.rank===13)score+=0.7;});let bid=Math.round(score);return Math.max(1,Math.min(13,bid));}
-function botPickCard(hand,trick,trump){
-  const valid=computeValidCards(hand,trick,trump);
-  if(trick.length===0){const nonTrump=valid.filter(c=>c.suit!==trump);const pool=nonTrump.length>0?nonTrump:valid;return pool.reduce((a,b)=>a.rank<b.rank?a:b);}
-  return valid.reduce((a,b)=>a.rank<b.rank?a:b);
-}
-function isBotUid(uid){ return typeof uid==='string' && uid.indexOf('bot-')===0; }
-
-let myUid=null, myName='', roomId=null, roomRef=null, myHandRef=null;
-let room=null, myHand={cards:[],bid:null};
-let localTrumpOptions=null, myBidDraft=5;
-let botMoving=false;
-let showHistory=false;
-const pageLoadTs=Date.now();
-const handled=new Set();
-function once(key){ if(handled.has(key)) return false; handled.add(key); return true; }
-function onceAsync(key, fn){
-  if(!once(key)) return;
-  Promise.resolve().then(fn).catch(e=>{ handled.delete(key); console.error('action failed, will retry:', key, e); });
-}
-
-function mySeat(){ return room && room.players ? room.players.findIndex(p=>p.uid===myUid) : -1; }
-function seatToAct(){ return ((room.leaderSeat||0) + (room.currentTrick||[]).length) % 4; }
-function iAmResponsibleForSeat(seatIdx){
-  const p=room.players[seatIdx]; if(!p) return false;
-  if(p.uid===myUid) return true;
-  if(isBotUid(p.uid) && myUid===room.hostUid) return true;
-  return false;
+let lastStateChangeAt = Date.now();
+let watchdogTimer = null;
+function subscribeRoom(code){
+  if(unsubRoom) unsubRoom();
+  unsubRoom = db.collection(ROOMS).doc(code).onSnapshot(doc=>{
+    if(!doc.exists) return;
+    ROOM = doc.data();
+    MY_SEAT = ROOM.seats.findIndex(s=>s.uid===myUid);
+    IS_HOST = (myUid===ROOM.hostUid);
+    if(ROOM.status==='lobby' || ROOM.status==='seating'){
+      renderLobbyScreen();
+      showScreen('screenLobby');
+    } else if(ROOM.status==='playing'){
+      showScreen('wrap');
+      document.getElementById('teamAlabel').textContent = seatLabel(0)+' & '+seatLabel(2);
+      document.getElementById('teamBlabel').textContent = seatLabel(1)+' & '+seatLabel(3);
+      document.getElementById('newGameBtn').classList.toggle('hiddenBtn', !IS_HOST);
+      if(!unsubState) subscribeState();
+    }
+  }, e=>{ console.error('subscribeRoom error', e); alert('Could not load the room: '+e.message+'\n\nThis usually means Firestore security rules are blocking the "game29_rooms" collection.'); });
 }
 
-auth.onAuthStateChanged(user=>{
-  if(user){ myUid=user.uid; boot(); }
-  else { auth.signInAnonymously().catch(e=>alert('Sign-in failed: '+e.message)); }
+/* ---------------- SCREEN MANAGEMENT ---------------- */
+function showScreen(id){
+  ['screenHome','screenName','screenHostSetup','screenLobby','wrap'].forEach(s=>{
+    document.getElementById(s).classList.toggle('hidden', s!==id);
+  });
+}
+
+let nameFlowMode = null; // 'host' | 'join'
+let pendingJoinCode = null;
+let pendingName = '';
+
+document.getElementById('btnHostNew').addEventListener('click', ()=>{
+  nameFlowMode='host';
+  document.getElementById('nameScreenTitle').textContent='Your name (host)';
+  showScreen('screenName');
+});
+document.getElementById('btnJoinCode').addEventListener('click', ()=>{
+  const code = prompt('Enter the room code your friend shared:');
+  if(!code) return;
+  pendingJoinCode = code.trim().toUpperCase();
+  nameFlowMode='join';
+  document.getElementById('nameScreenTitle').textContent='Your name';
+  showScreen('screenName');
+});
+document.getElementById('btnNameContinue').addEventListener('click', (e)=>{
+  const val = document.getElementById('nameInput').value.trim();
+  if(!val){ alert('Please enter a name.'); return; }
+  e.target.disabled = true;
+  pendingName = val;
+  if(nameFlowMode==='host'){
+    showScreen('screenHostSetup');
+    e.target.disabled = false;
+  } else {
+    joinRoom(pendingJoinCode, pendingName);
+  }
+});
+document.querySelectorAll('#screenHostSetup [data-cpu]').forEach(btn=>{
+  btn.addEventListener('click', ()=> createRoom(pendingName, Number(btn.dataset.cpu)));
 });
 
-function boot(){
-  const params=new URLSearchParams(location.search);
-  roomId=params.get('room');
-  renderLanding();
+function genCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c=''; for(let i=0;i<4;i++) c+=chars[Math.floor(Math.random()*chars.length)];
+  return c;
 }
 
-function el(html){ document.getElementById('app').innerHTML=html; }
-
-function renderLanding(){
-  if(roomId){
-    el(`<h1>Call Break Local</h1><div class="sub">Joining room ${roomId}\u2026</div>
-    <div class="panel"><input type="text" id="nameInput" placeholder="Your name" /><div style="height:10px;"></div><button onclick="doJoin()">Join room</button></div>`);
-  } else {
-    el(`<h1>Call Break Local</h1><div class="sub">Create a room, choose how many real players you need, then send the link to the rest.</div>
-    <div class="panel">
-      <input type="text" id="nameInput" placeholder="Your name" />
-      <div style="height:10px;"></div>
-      <div class="col">
-        <button onclick="doCreate(1)">Just me + 3 computer players</button>
-        <button onclick="doCreate(2)">2 of us + 2 computer players</button>
-        <button onclick="doCreate(3)">3 of us + 1 computer player</button>
-        <button onclick="doCreate(4)">4 of us \u2014 fully online</button>
-      </div>
-    </div>`);
-  }
-}
-
-async function doCreate(humanCount){
-  const name=document.getElementById('nameInput').value.trim()||'Player';
-  myName=name;
-  roomId=Math.random().toString(36).slice(2,6).toUpperCase();
-  roomRef=db.collection('rooms').doc(roomId);
-  myHandRef=roomRef.collection('hands').doc(myUid);
-  const botCount=4-humanCount;
-  const players=[{uid:myUid,name,isBot:false}];
-  for(let i=0;i<botCount;i++) players.push({uid:'bot-'+(i+1), name:'Computer '+(i+1), isBot:true});
-  await roomRef.set({
-    createdAt: Date.now(), hostUid: myUid, humanCount,
-    players,
-    phase:'waiting', round:0, dealSeq:0, dealerSeat:0, trumpChooserSeat:1,
-    trumpSuit:null, sideOf:{}, currentTrick:[], leaderSeat:0, trickNum:1,
-    tricksWon:{}, scores:{}, revealedBids:{}, roundScores:{}, history:[],
-    readyPlayers:{}, cancelReason:''
+function createRoom(hostName, numComputers){
+  const code = genCode();
+  const seats = new Array(4).fill(null);
+  for(let i=0;i<numComputers;i++) seats[3-i] = {type:'cpu', uid:null, name:'Computer '+(i+1)};
+  seats[0] = {type:'human', uid:myUid, name:hostName};
+  for(let i=1;i<4;i++) if(!seats[i]) seats[i] = {type:'human', uid:null, name:null};
+  const humansNeeded = seats.filter(s=>s.type==='human').length;
+  const status = humansNeeded<=1 ? 'seating' : 'lobby';
+  document.querySelectorAll('#screenHostSetup [data-cpu]').forEach(b=>b.disabled=true);
+  db.collection(ROOMS).doc(code).set({
+    hostUid: myUid, numComputers, humansNeeded, status, seats,
+    boardMode:null, trumpMode:'hidden', createdAt: Date.now()
+  }).then(()=>{
+    ROOM_CODE = code;
+    subscribeRoom(code);
+  }).catch(e=>{
+    document.querySelectorAll('#screenHostSetup [data-cpu]').forEach(b=>b.disabled=false);
+    alert('Could not create the room: '+e.message+'\n\nThis usually means the Firestore security rules for this Firebase project need to allow the "game29_rooms" collection.');
+    console.error('createRoom error', e);
   });
-  history.replaceState(null,'','?room='+roomId);
-  subscribe();
 }
 
-async function doJoin(){
-  const name=document.getElementById('nameInput').value.trim()||'Player';
-  myName=name;
-  roomRef=db.collection('rooms').doc(roomId);
-  myHandRef=roomRef.collection('hands').doc(myUid);
-  try{
-    await db.runTransaction(async tx=>{
-      const snap=await tx.get(roomRef);
-      if(!snap.exists) throw new Error('Room not found');
-      const d=snap.data();
-      if(d.players.some(p=>p.uid===myUid)) return;
-      if(d.players.length>=4) throw new Error('Room is full');
-      tx.update(roomRef,{players:[...d.players,{uid:myUid,name,isBot:false}]});
-    });
-  }catch(e){ el(`<h1>Call Break Local</h1><div class="panel">${e.message}</div>`); return; }
-  subscribe();
+function joinRoom(code, name){
+  const ref = db.collection(ROOMS).doc(code);
+  db.runTransaction(async (tx)=>{
+    const doc = await tx.get(ref);
+    if(!doc.exists) throw new Error('No room with that code.');
+    const data = doc.data();
+    const seats = data.seats.slice();
+    const already = seats.some(s=>s.uid===myUid);
+    if(already) return; // this device already has a seat — do nothing
+    const idx = seats.findIndex(s=>s.type==='human' && s.uid===null);
+    if(idx===-1) throw new Error('That room is already full.');
+    seats[idx] = {type:'human', uid:myUid, name};
+    const filled = seats.filter(s=>s.type==='human' && s.uid).length;
+    const humansNeeded = seats.filter(s=>s.type==='human').length;
+    const status = filled>=humansNeeded ? 'seating' : 'lobby';
+    tx.update(ref, {seats, status});
+  }).then(()=>{
+    ROOM_CODE = code;
+    subscribeRoom(code);
+  }).catch(e=>{
+    alert(e.message || 'Could not join that room.');
+    showScreen('screenHome');
+  });
 }
 
-function subscribe(){
-  roomRef.onSnapshot(snap=>{ room=snap.data(); onRoomChange(); });
-  myHandRef.onSnapshot(snap=>{ if(snap.exists){ myHand=snap.data(); } render(); });
+/* ---------------- LOBBY RENDERING ---------------- */
+async function shareLink(link){
+  if(navigator.share){
+    try{ await navigator.share({title:'Join my 29 game', text:'Join my 29 card game room!', url:link}); return; }catch(e){}
+  }
+  try{ await navigator.clipboard.writeText(link); alert('Link copied — paste it to your friends!'); return; }catch(e){}
+  prompt('Copy this link to share with friends:', link);
 }
 
-function onRoomChange(){
-  if(!room){ render(); return; }
-  const seq=room.dealSeq||0;
+function renderLobbyScreen(){
+  document.getElementById('lobbyTitle').textContent = 'Room '+ROOM_CODE;
 
-  if(room.phase==='trump' && !room.trumpSuit && isBotUid(room.players[room.trumpChooserSeat].uid) && myUid===room.hostUid){
-    onceAsync('trumpbot-'+seq, ()=>roomRef.update({trumpSuit: SUITS[Math.floor(Math.random()*4)].key}));
+  const linkWrap = document.getElementById('lobbyLinkWrap');
+  linkWrap.innerHTML='';
+  if(IS_HOST){
+    const link = location.origin+location.pathname+'?room='+ROOM_CODE;
+    const box = document.createElement('div'); box.className='linkbox'; box.textContent=link;
+    const shareBtn = document.createElement('button'); shareBtn.className='btn small primary'; shareBtn.textContent='Share Link';
+    shareBtn.style.marginTop='6px'; shareBtn.style.width='100%';
+    shareBtn.addEventListener('click', ()=>shareLink(link));
+    linkWrap.appendChild(box); linkWrap.appendChild(shareBtn);
   }
-  if(room.phase==='trump' && room.trumpSuit && iAmResponsibleForSeat(room.dealerSeat)){
-    onceAsync('deal-'+seq, performDeal);
-  }
-  if(room.phase==='bidding'){
-    room.players.forEach(p=>{
-      if(isBotUid(p.uid) && myUid===room.hostUid && !(room.readyPlayers&&room.readyPlayers[p.uid])){
-        onceAsync('botbid-'+p.uid+'-'+seq, ()=>doBotBid(p.uid));
-      }
-    });
-    const ready=room.readyPlayers||{};
-    if(room.players.every(p=>ready[p.uid])){
-      onceAsync('start-'+seq, tryStartPlaying);
-    }
-  }
-  if(room.phase==='playing' && (room.currentTrick||[]).length<4){
-    const seat=seatToAct(); const p=room.players[seat];
-    if(p && isBotUid(p.uid) && myUid===room.hostUid && !botMoving){
-      botMoving=true;
-      setTimeout(()=>{ doBotPlay(p.uid, seat).finally(()=>{ botMoving=false; onRoomChange(); }); }, 500);
-    }
-  }
-  if(room.phase==='playing' && (room.currentTrick||[]).length===4){
-    onceAsync('trickfull-'+seq+'-'+room.trickNum, ()=>new Promise(res=>setTimeout(()=>resolveCurrentTrick().then(res).catch(res),2000)));
-  }
-  if(room.cancelRequest){
-    room.players.forEach(p=>{
-      if(isBotUid(p.uid) && myUid===room.hostUid && !room.cancelRequest.votes[p.uid]){
-        onceAsync('cancelbotvote-'+p.uid+'-'+room.cancelRequest.id, ()=>roomRef.update({['cancelRequest.votes.'+p.uid]:true}));
-      }
-    });
-    if(room.players.every(p=>room.cancelRequest.votes[p.uid])){
-      onceAsync('cancelapply-'+room.cancelRequest.id, applyCancelRound);
-    }
-  }
-  if(room.phase==='collecting'){
-    if(myHand.bid!=null && !(room.revealedBids&&room.revealedBids[myUid]!=null)){
-      roomRef.update({['revealedBids.'+myUid]: myHand.bid});
-    }
-    room.players.forEach(p=>{
-      if(isBotUid(p.uid) && myUid===room.hostUid && !(room.revealedBids&&room.revealedBids[p.uid]!=null)){
-        onceAsync('botreveal-'+p.uid+'-'+seq, ()=>revealBotBid(p.uid));
-      }
-    });
-    const uids=room.players.map(p=>p.uid);
-    if(uids.every(u=>room.revealedBids&&room.revealedBids[u]!=null)){
-      onceAsync('finish-'+seq, tryFinishRound);
-    }
-  }
-  render();
-}
 
-async function performDeal(){
-  const deck=shuffle(newDeck());
-  const hands=[[],[],[],[]];
-  for(let i=0;i<4;i++) hands[i]=sortHand(deck.slice(i*13,(i+1)*13), room.trumpSuit);
-  const noTrumpVoid=hands.some(h=>h.filter(c=>c.suit===room.trumpSuit).length===0);
-  const noFaceCard=hands.some(h=>h.filter(c=>c.rank>=11).length===0);
-  if(noTrumpVoid||noFaceCard){
-    await roomRef.update({phase:'cancelled', cancelReason: noTrumpVoid?'a player had no trump cards':'a player had no ace, king, queen, or jack'});
-    setTimeout(performDeal,1600);
+  const list = document.getElementById('lobbyPlayerList');
+  const humanSeats = ROOM.seats.filter(s=>s.type==='human');
+  const joined = humanSeats.filter(s=>s.uid).length;
+  list.innerHTML = `<b>Players (${joined}/${humanSeats.length}):</b><br>` +
+    ROOM.seats.map((s,i)=> s.type==='cpu' ? `${s.name} (computer)` : (s.uid ? `${s.name}${s.uid===myUid?' (you)':''}` : 'Waiting for a friend...')).join('<br>');
+
+  const seatWrap = document.getElementById('lobbySeatWrap');
+  const boardWrap = document.getElementById('lobbyBoardModeWrap');
+  const startWrap = document.getElementById('lobbyStartWrap');
+  const waitNote = document.getElementById('lobbyWaitNote');
+  seatWrap.innerHTML=''; boardWrap.innerHTML=''; startWrap.innerHTML=''; waitNote.textContent='';
+
+  if(ROOM.status==='lobby'){
+    waitNote.textContent = 'Waiting for friends to join with the link above...';
     return;
   }
-  const nonTrump=SUITS.map(s=>s.key).filter(k=>k!==room.trumpSuit);
-  const sideOf={}; const tricksWon={};
-  room.players.forEach((p,i)=>{
-    sideOf[p.uid]=nonTrump.some(suit=>hands[i].filter(c=>c.suit===suit).length===0);
-    tricksWon[p.uid]=0;
-  });
-  await db.runTransaction(async tx=>{
-    const snap=await tx.get(roomRef); const d=snap.data();
-    if(d.phase!=='trump' || d.trumpSuit!==room.trumpSuit) return;
-    tx.update(roomRef, {phase:'bidding', sideOf, tricksWon, revealedBids:{}, currentTrick:[], leaderSeat:d.trumpChooserSeat, trickNum:1, readyPlayers:{}, cancelReason:''});
-    room.players.forEach((p,i)=>{ tx.set(roomRef.collection('hands').doc(p.uid), {cards:hands[i], bid:null}); });
-  });
-}
 
-async function doBotBid(uid){
-  const snap=await roomRef.collection('hands').doc(uid).get();
-  const hand=snap.data().cards;
-  const bid=estimateBid(hand, room.trumpSuit);
-  const batch=db.batch();
-  batch.update(roomRef.collection('hands').doc(uid), {bid});
-  batch.update(roomRef, {['readyPlayers.'+uid]:true});
-  await batch.commit();
-}
-
-async function revealBotBid(uid){
-  const snap=await roomRef.collection('hands').doc(uid).get();
-  await roomRef.update({['revealedBids.'+uid]: snap.data().bid});
-}
-
-async function doBotPlay(uid, seat){
-  const snap=await roomRef.collection('hands').doc(uid).get();
-  const hand=snap.data().cards;
-  const card=botPickCard(hand, room.currentTrick||[], room.trumpSuit);
-  await executePlay(uid, seat, card, hand);
-}
-
-async function tryStartPlaying(){
-  await db.runTransaction(async tx=>{
-    const snap=await tx.get(roomRef); const d=snap.data();
-    if(d.phase!=='bidding') return;
-    if(!d.players.every(p=>d.readyPlayers&&d.readyPlayers[p.uid])) return;
-    tx.update(roomRef,{phase:'playing'});
-  });
-}
-
-async function tryFinishRound(){
-  await db.runTransaction(async tx=>{
-    const snap=await tx.get(roomRef); const d=snap.data();
-    if(d.phase!=='collecting') return;
-    const uids=d.players.map(p=>p.uid);
-    if(!uids.every(u=>d.revealedBids&&d.revealedBids[u]!=null)) return;
-    const roundScores={}; const scores={...d.scores};
-    uids.forEach(u=>{
-      const bid=d.revealedBids[u], won=d.tricksWon[u]||0, diff=won-bid;
-      let sc = diff<0 ? -bid : (diff<=1 ? bid : -bid);
-      if(bid===8 && won===8) sc+=8;
-      roundScores[u]=sc; scores[u]=(scores[u]||0)+sc;
-    });
-    const historyEntry={round:d.round, bids:d.revealedBids, tricksWon:d.tricksWon, roundScores};
-    tx.update(roomRef,{phase:'reveal', roundScores, scores, history:(d.history||[]).concat([historyEntry])});
-  });
-}
-
-async function startGame(){
-  const scores={}; room.players.forEach(p=>scores[p.uid]=0);
-  await roomRef.update({phase:'trump', round:1, dealSeq:1, dealerSeat:0, trumpChooserSeat:1, trumpSuit:null, scores});
-}
-
-async function chooseTrump(idx){
-  if(room.trumpSuit) return;
-  const suit=localTrumpOptions[idx];
-  await roomRef.update({trumpSuit:suit});
-}
-
-function updateBidDraft(v){ myBidDraft=parseInt(v); const out=document.getElementById('bidOut'); if(out) out.textContent=v; }
-
-async function markReady(){
-  await myHandRef.update({bid:myBidDraft});
-  await roomRef.update({['readyPlayers.'+myUid]:true});
-}
-
-async function executePlay(uid, seat, card, currentHandCards){
-  await db.runTransaction(async tx=>{
-    const snap=await tx.get(roomRef); const d=snap.data();
-    if(d.phase!=='playing') return;
-    const trick=(d.currentTrick||[]).slice();
-    if(trick.length>=4) return;
-    if(((d.leaderSeat||0)+trick.length)%4 !== seat) return;
-    trick.push({uid, seat, card});
-    tx.update(roomRef, {currentTrick:trick});
-    const newCards=currentHandCards.filter(c=>!(c.suit===card.suit&&c.rank===card.rank));
-    tx.update(roomRef.collection('hands').doc(uid), {cards:newCards});
-  });
-}
-
-async function resolveCurrentTrick(){
-  await db.runTransaction(async tx=>{
-    const snap=await tx.get(roomRef); const d=snap.data();
-    if(d.phase!=='playing') return;
-    const trick=d.currentTrick||[];
-    if(trick.length!==4) return;
-    const winnerEntry=currentWinner(trick, d.trumpSuit);
-    const tricksWon={...d.tricksWon}; tricksWon[winnerEntry.uid]=(tricksWon[winnerEntry.uid]||0)+1;
-    let update;
-    if(d.trickNum>=13){ update={currentTrick:[], leaderSeat:winnerEntry.seat, tricksWon, phase:'collecting'}; }
-    else{ update={currentTrick:[], leaderSeat:winnerEntry.seat, tricksWon, trickNum:d.trickNum+1}; }
-    tx.update(roomRef, update);
-  });
-}
-
-async function playCard(suit,rank){
-  if(mySeat()!==seatToAct()) return;
-  const card={suit,rank};
-  const valid=computeValidCards(myHand.cards, room.currentTrick||[], room.trumpSuit);
-  if(!valid.some(c=>c.suit===suit&&c.rank===rank)) return;
-  await executePlay(myUid, mySeat(), card, myHand.cards);
-}
-
-async function nextRound(){
-  await db.runTransaction(async tx=>{
-    const snap=await tx.get(roomRef); const d=snap.data();
-    if(d.phase!=='reveal') return;
-    const dealerSeat=(d.dealerSeat+1)%4;
-    tx.update(roomRef,{phase:'trump', round:d.round+1, dealSeq:(d.dealSeq||0)+1, dealerSeat, trumpChooserSeat:(dealerSeat+1)%4, trumpSuit:null, cancelReason:''});
-  });
-}
-
-async function requestCancelRound(){
-  const newId=(room.cancelRequestId||0)+1;
-  await roomRef.update({cancelRequestId:newId, cancelRequest:{id:newId, votes:{[myUid]:true}}});
-}
-
-async function respondCancelRound(accept){
-  if(!accept){ await roomRef.update({cancelRequest:null}); return; }
-  await roomRef.update({['cancelRequest.votes.'+myUid]:true});
-}
-
-async function applyCancelRound(){
-  await db.runTransaction(async tx=>{
-    const snap=await tx.get(roomRef); const d=snap.data();
-    if(!d.cancelRequest) return;
-    tx.update(roomRef,{phase:'trump', trumpSuit:null, dealSeq:(d.dealSeq||0)+1, trumpChooserSeat:(d.dealerSeat+1)%4, cancelRequest:null, cancelReason:''});
-  });
-}
-
-function render(){
-  if(!room){ return; }
-  if(room.phase==='waiting'){ renderWaiting(); return; }
-  renderGame();
-}
-
-function renderWaiting(){
-  const link=location.origin+location.pathname+'?room='+roomId;
-  const list=room.players.map(p=>`<div class="seat"><div class="seatname">${p.name}${p.uid===room.hostUid?' <span class="badge">host</span>':''}${p.isBot?' <span class="badge">computer</span>':''}</div></div>`).join('');
-  const canStart = room.hostUid===myUid && room.players.length===4;
-  el(`<h1>Call Break Local</h1><div class="sub">Room ${roomId} \u2014 ${room.players.length}/4 seats filled</div>
-  <div class="panel">
-    <div class="linkbox"><input type="text" readonly value="${link}" onclick="this.select()" /><button class="secondary" onclick="navigator.clipboard.writeText('${link}')">Copy link</button></div>
-  </div>
-  <div class="row" style="margin-bottom:16px;">${list}</div>
-  ${room.hostUid===myUid ? `<button ${canStart?'':'disabled'} onclick="startGame()">Start game</button>` : `<div class="sub">Waiting for the host to start\u2026</div>`}`);
-}
-
-function renderGame(){
-  const trumpCornerHtml = room.trumpSuit ? (function(){const si=suitInfo(room.trumpSuit);return `<div class="trump-corner"><div class="rank">K</div><div class="suit" style="color:${si.red?'var(--danger)':'var(--ink)'};">${si.sym}</div></div>`;})() : '';
-  let html=`<h1>Call Break Local</h1>
-  <div class="sub" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-    <span>Round ${room.round} \u00b7 dealer ${room.players[room.dealerSeat]?.name||'?'}</span>${room.trumpSuit?'':'<span class="sub" style="margin:0;">Trump not set</span>'}
-  </div>
-  <div class="scoreboard-wrap">
-    ${trumpCornerHtml}
-    <div class="scoreboard">${room.players.map(p=>`<div class="scorebox"><div class="l">${p.name}</div><div class="n">${(room.scores&&room.scores[p.uid])||0}</div></div>`).join('')}</div>
-  </div>
-  ${renderCancelBar()}`;
-
-  const active=(room.phase==='playing' && (room.currentTrick||[]).length<4) ? seatToAct() : -1;
-  const showSideOf = room.phase!=='trump' && room.phase!=='cancelled' && room.phase!=='waiting';
-  const seatBox=(i)=>{
-    const p=room.players[i]; if(!p) return '<div></div>';
-    const isDealer=room.dealerSeat===i, isActive=active===i;
-    const sideBadge=(showSideOf && room.sideOf && room.sideOf[p.uid]) ? ' <span class="badge" title="Side of \u2014 void in one suit, which one stays hidden">side of</span>' : '';
-    let info='';
-    if(room.phase==='reveal'){ const last=room.history[room.history.length-1]; info=`bid ${last.bids[p.uid]} \u00b7 won ${last.tricksWon[p.uid]}`; }
-    else if(room.phase==='playing'){ info = p.uid===myUid ? `bid ${myHand.bid} \u00b7 picked ${room.tricksWon[p.uid]||0}` : 'bid hidden'; }
-    else if(room.phase==='bidding'){ info = p.uid===myUid ? `bid ${myBidDraft}` : ((room.readyPlayers&&room.readyPlayers[p.uid])?'ready':'bidding\u2026'); }
-    return `<div class="seat ${isActive?'active':''}"><div class="seatname">${p.name}${isDealer?' <span class="badge">dealer</span>':''}${sideBadge}</div><div class="seatinfo">${info}</div></div>`;
-  };
-  const trickHtml=(room.currentTrick||[]).map(e=>{const si=suitInfo(e.card.suit);const pl=room.players[e.seat];return `<div class="center"><div class="card">${rankLabel(e.card.rank)}<span style="color:${si.red?'var(--danger)':'inherit'};">${si.sym}</span></div><div class="seatinfo">${pl?pl.name:''}</div></div>`;}).join('');
-  const midContent = (room.phase==='playing'||room.phase==='reveal') ? `<div class="row" style="justify-content:center;min-height:70px;align-items:center;">${trickHtml||'<span class="sub" style="margin:0;">trick in progress</span>'}</div>` : (room.phase==='cancelled'?`<div class="sub" style="color:var(--danger);margin:0;">round cancelled</div>`:`<div class="sub" style="margin:0;">table</div>`);
-
-  html+=`<div class="table">
-    <div style="grid-area:top;">${seatBox((2+mySeat())%4)}</div>
-    <div style="grid-area:left;">${seatBox((3+mySeat())%4)}</div>
-    <div style="grid-area:mid;">${midContent}</div>
-    <div style="grid-area:right;">${seatBox((1+mySeat())%4)}</div>
-    <div style="grid-area:bottom;">${seatBox(mySeat())}</div>
-  </div>`;
-
-  html+=renderControls();
-  html+=renderHand();
-  html+=renderHistory();
-  el(html);
-}
-
-function renderControls(){
-  if(room.phase==='trump'){
-    if(mySeat()===room.trumpChooserSeat){
-      if(!localTrumpOptions) localTrumpOptions=shuffle(SUITS.map(s=>s.key));
-      return `<div class="panel"><div class="sub" style="margin-bottom:8px;">You're right of the dealer \u2014 pick one of the four face-down cards to set trump.</div>
-      <div class="row" style="justify-content:center;">${[0,1,2,3].map(idx=>`<div class="card back" onclick="chooseTrump(${idx})">?</div>`).join('')}</div></div>`;
+  // status === 'seating': show seat/partner grid
+  const heading = document.createElement('h2'); heading.style.marginTop='10px';
+  heading.textContent = IS_HOST ? 'Arrange seats (tap two to swap)' : 'Table arrangement';
+  seatWrap.appendChild(heading);
+  const grid = document.createElement('div'); grid.className='seatgrid';
+  // display order: seat0, seat2 (team A) then seat1, seat3 (team B)
+  const displayOrder = [0,2,1,3];
+  displayOrder.forEach(seatIdx=>{
+    const s = ROOM.seats[seatIdx];
+    const tile = document.createElement('div');
+    tile.className = 'seattile' + (s.uid===myUid?' mine':'') + (IS_HOST?' selectable':'') + (selectedSeatTile===seatIdx?' selected':'');
+    const teamCls = TEAM[seatIdx]==='A' ? 'teamA':'teamB';
+    tile.innerHTML = `<div class="teamtag ${teamCls}">Team ${TEAM[seatIdx]}</div><div class="occ">${s.type==='cpu'?s.name:(s.name||'Empty')}</div>`;
+    if(IS_HOST){
+      tile.addEventListener('click', ()=> onSeatTileTap(seatIdx));
     }
-    return `<div class="panel sub" style="margin:0;">${room.players[room.trumpChooserSeat]?.name||'?'} is choosing trump from four face-down cards.</div>`;
+    grid.appendChild(tile);
+  });
+  seatWrap.appendChild(grid);
+
+  const allFilled = ROOM.seats.every(s=> s.type==='cpu' || s.uid);
+
+  if(IS_HOST){
+    const bh = document.createElement('h2'); bh.style.marginTop='14px'; bh.textContent='Scoring board';
+    boardWrap.appendChild(bh);
+    const row = document.createElement('div'); row.className='rowbtns';
+    ['single','double'].forEach(mode=>{
+      const b = document.createElement('button');
+      b.className = 'btn small ' + (ROOM.boardMode===mode?'primary':'ghost');
+      b.textContent = mode==='single' ? 'Single Board' : 'Double Board';
+      b.addEventListener('click', ()=> db.collection(ROOMS).doc(ROOM_CODE).update({boardMode:mode}));
+      row.appendChild(b);
+    });
+    boardWrap.appendChild(row);
+
+    const th = document.createElement('h2'); th.style.marginTop='14px'; th.textContent='Trump style';
+    boardWrap.appendChild(th);
+    const trow = document.createElement('div'); trow.className='rowbtns';
+    ['hidden','show'].forEach(mode=>{
+      const b = document.createElement('button');
+      b.className = 'btn small ' + ((ROOM.trumpMode||'hidden')===mode?'primary':'ghost');
+      b.textContent = mode==='hidden' ? 'Hidden Trump' : 'Show Trump';
+      b.addEventListener('click', ()=> db.collection(ROOMS).doc(ROOM_CODE).update({trumpMode:mode}));
+      trow.appendChild(b);
+    });
+    boardWrap.appendChild(trow);
+
+    const startBtn = document.createElement('button');
+    startBtn.className='btn primary'; startBtn.style.marginTop='12px'; startBtn.textContent='Start Game';
+    startBtn.disabled = !(allFilled && ROOM.boardMode);
+    startBtn.addEventListener('click', startGame);
+    startWrap.appendChild(startBtn);
+    if(!ROOM.boardMode) waitNote.textContent='Pick a scoring board to continue.';
+  } else {
+    waitNote.textContent = 'Waiting for the host to start the game...';
   }
-  if(room.phase==='cancelled'){
-    return `<div class="panel" style="color:var(--danger);">Round cancelled \u2014 ${room.cancelReason}. Redealing\u2026</div>`;
-  }
-  if(room.phase==='bidding'){
-    const amReady = room.readyPlayers && room.readyPlayers[myUid];
-    if(amReady) return `<div class="panel sub" style="margin:0;">Bid locked in. Waiting for everyone else\u2026</div>`;
-    return `<div class="panel"><div class="sub" style="margin-bottom:8px;">Set your bid (1\u201313). Keep adjusting it as long as you like \u2014 it locks the moment everyone's ready and the first card is played.</div>
-    <div class="row" style="align-items:center;">
-      <input type="range" min="1" max="13" step="1" value="${myBidDraft}" oninput="updateBidDraft(this.value)" style="flex:1;" />
-      <span id="bidOut" style="font-weight:800;min-width:24px;text-align:center;">${myBidDraft}</span>
-      <button onclick="markReady()">Ready</button>
-    </div></div>`;
-  }
-  if(room.phase==='playing'){
-    const seat=(room.currentTrick||[]).length<4 ? seatToAct() : -1;
-    const label = seat===mySeat() ? 'your turn \u2014 pick a card below' : (seat>=0 ? (room.players[seat]?.name||'?')+' is playing\u2026' : 'all four cards played \u2014 next trick starting\u2026');
-    return `<div class="panel sub" style="margin:0;text-align:center;">Trick ${room.trickNum} of 13 \u00b7 ${label}</div>`;
-  }
-  if(room.phase==='reveal'){
-    const last=room.history[room.history.length-1];
-    const rows=room.players.map(p=>{const bid=last.bids[p.uid],won=last.tricksWon[p.uid],sc=last.roundScores[p.uid];const diff=won-bid;const note=(diff===1 && !(bid===8&&won===8))?' <span class="sub" style="margin:0;">(1 over, ok)</span>':'';return `<tr><td>${p.name}</td><td class="center">${bid}</td><td class="center">${won}</td><td class="center" style="color:${sc>=0?'var(--success)':'var(--danger)'};">${sc>=0?'+':''}${sc}${(bid===8&&won===8)?' \u2605':''}${note}</td></tr>`;}).join('');
-    const nextDealer=room.players[(room.dealerSeat+1)%4];
-    return `<div class="panel"><table class="hist"><tr class="sub"><td>Player</td><td class="center">Bid</td><td class="center">Won</td><td class="center">Score</td></tr>${rows}</table>
-    <div class="sub" style="margin:10px 0;">Next dealer: ${nextDealer?nextDealer.name:'?'} \u00b7 rotates anticlockwise</div>
-    <div class="center"><button onclick="nextRound()">Play next round</button></div></div>`;
-  }
-  return '';
 }
 
+function onSeatTileTap(seatIdx){
+  if(selectedSeatTile===null){ selectedSeatTile=seatIdx; renderLobbyScreen(); return; }
+  if(selectedSeatTile===seatIdx){ selectedSeatTile=null; renderLobbyScreen(); return; }
+  const seats = ROOM.seats.slice();
+  const a = seats[selectedSeatTile], b = seats[seatIdx];
+  seats[selectedSeatTile] = b; seats[seatIdx] = a;
+  selectedSeatTile = null;
+  db.collection(ROOMS).doc(ROOM_CODE).update({seats}).catch(e=>{
+    console.error('seat swap error', e);
+    alert('Could not update seats: '+e.message);
+  });
+}
+
+function startGame(){
+  db.collection(ROOMS).doc(ROOM_CODE).update({status:'playing'}).then(()=>{
+    G = {
+      dealer: 0,
+      scoreA: 0, scoreB: 0,
+      boardMode: ROOM.boardMode,
+      trumpMode: ROOM.trumpMode||'hidden',
+      boxes: {A:{red:false, black:false}, B:{red:false, black:false}},
+      matchOver:false,
+      roundHistory: [],
+    };
+    hostStartRound();
+  });
+}
+
+/* ---------------- ROUND SETUP (host-only shuffling) ---------------- */
+function hostStartRound(){
+  if(!IS_HOST) return;
+  if(G.matchOver) return;
+  const deck = shuffle(freshDeck());
+  const hands = {0:[],1:[],2:[],3:[]};
+  const first = nextSeat(G.dealer);
+  let order4 = [];
+  for(let k=0;k<4;k++) order4.push(ORDER[(ORDER.indexOf(first)+k)%4]);
+  for(const seat of order4) hands[seat] = deck.splice(0,4);
+
+  G.round = {
+    deck, hands, order4, first,
+    bidHistory: [], highBid: 0, highBidder: null, passed: [],
+    trump: null, trumpRevealed:false, secondOptionSeat:null,
+    tricks: [], trickNo:0, leader:first,
+    current: {}, leadSuit:null, playOrder:[],
+    pointsA:0, pointsB:0,
+    pairDeclared:{A:false,B:false},
+    singles:null, doubled:false, bidMultiplier:1, partnerRevealShown:false, originalTrump:null,
+    bidDoubleBy:null, redoubleBy:null, pairDeclaredBy:null, forcedTrumpFor:null,
+    phase:'bidding',
+    awaiting:{type:'bid', seat:first},
+    log:[]
+  };
+  const firstHandPts = hands[first].reduce((sum,c)=>sum+RANK_POINTS[c.r],0);
+  if(firstHandPts===0){
+    logMsg(`${pname(first)} (first to bid) was dealt four cards worth 0 points — round cancelled.`);
+    G.round.awaiting = {type:'redealAck', reason:'firstBidderNoPoints', seat:first};
+    pushState();
+    showRedealOverlay();
+    return;
+  }
+  logMsg(`— New round — dealer: ${pname(G.dealer)}, first to bid: ${pname(first)}`);
+  startBidding();
+}
+
+function handStrength(hand){
+  const bySuit = {};
+  for(const s of SUITS) bySuit[s] = [];
+  for(const c of hand) bySuit[c.s].push(c.r);
+  let best = {suit:null, score:-1};
+  for(const s of SUITS){
+    const cards = bySuit[s];
+    let score = cards.length * 2;
+    for(const r of cards) score += RANK_POINTS[r]*1.4 + (r==='9'?1:0);
+    if(score>best.score) best = {suit:s, score};
+  }
+  return best;
+}
+
+function logMsg(msg){
+  G.round.log = G.round.log || [];
+  G.round.log.unshift(msg);
+  if(G.round.log.length>60) G.round.log.length=60;
+}
+
+/* ---------------- DISPATCH / RESUME ---------------- */
+function resumeFlow(){
+  if(!G || !G.round) return;
+  const rd = G.round;
+  if(G.matchOver) return;
+  const aw = rd.awaiting;
+  if(!aw) return;
+  switch(aw.type){
+    case 'bid': bidTurn(aw.seat); break;
+    case 'trump': doTrumpStep(aw.seat); break;
+    case 'trumpSecondPick': doSecondOptionStep(aw.seat); break;
+    case 'bidDoubleOffer': doBidDoubleOfferStep(); break;
+    case 'redoubleOffer': doRedoubleOfferStep(); break;
+    case 'singlesOffer': doSinglesOfferStep(); break;
+    case 'double': doDoubleStep(aw.seat); break;
+    case 'play': playTurn(aw.seat); break;
+    case 'redealAck': showRedealOverlay(); break;
+    case 'roundEndAck': showRoundEndOverlay(); break;
+    case 'matchEndAck': showMatchEndOverlay(); break;
+  }
+}
+
+/* ---------------- BIDDING ----------------
+   Only TWO players bid against each other at any moment: 1st vs 2nd first.
+   Whoever passes is permanently out; the other (if they haven't also passed)
+   goes on to duel the next new player (3rd, then the dealer) — same process,
+   just a new opponent. If BOTH duelists pass without anyone ever bidding,
+   the next pair (skipping the two who dropped out) starts a fresh duel.
+   The two players not currently dueling can only watch. Dealer is forced to
+   bid (can't pass) only if it's their turn and nobody has bid at all yet. */
+function startBidding(){
+  const rd = G.round;
+  rd.duelSeats = [rd.order4[0], rd.order4[1]];
+  rd.pendingQueue = [rd.order4[2], rd.order4[3]];
+  rd.awaiting = {type:'bid', seat: rd.order4[0]};
+  pushState();
+  bidTurn(rd.order4[0]);
+}
+function bidTurn(seat){
+  const rd = G.round;
+  rd.awaiting = {type:'bid', seat};
+  if(!authorizedFor(seat)){
+    clearDecisionUI();
+    setPanelMsg(`Waiting for ${seatLabel(seat)} to bid...`);
+    return;
+  }
+  if(seat===MY_SEAT){ presentHumanBid(); return; }
+  setTimeout(()=>{
+    if(!G || !G.round || G.round.awaiting.type!=='bid' || G.round.awaiting.seat!==seat) return;
+    const rd = G.round; // re-read live state — G may have been replaced by a snapshot since we were scheduled
+    const hand = rd.hands[seat];
+    const {score} = handStrength(hand);
+    const isDealer = (seat===G.dealer);
+    const mustBid = isDealer && rd.highBid===0; // dealer can't pass if nobody has bid at all
+    const minBid = rd.highBid===0 ? 16 : rd.highBid+1;
+    const comfortCap = Math.min(28, Math.round(16+score/3));
+    let action;
+    if(mustBid){ action = {bid: Math.max(16, Math.min(28, Math.max(minBid,comfortCap)))}; }
+    else if(minBid>28){ action = {pass:true}; }
+    else if(minBid<=comfortCap){ action = {bid: minBid}; }
+    else { action = {pass:true}; }
+    if(action.pass){ rd.passed.push(seat); logMsg(`${pname(seat)} passes.`); resolveDuelStep(seat, true); }
+    else { rd.highBid=action.bid; rd.highBidder=seat; logMsg(`${pname(seat)} bids ${action.bid}${mustBid?' (forced, nobody had bid yet)':''}.`); resolveDuelStep(seat, false); }
+    pushState();
+  }, 550);
+}
+function resolveDuelStep(actingSeat, didPass){
+  const rd = G.round;
+  const other = rd.duelSeats.find(s=>s!==actingSeat);
+  if(!didPass){
+    // switch to the other seat in the current duel — they must raise or pass
+    rd.awaiting = {type:'bid', seat: other};
+    bidTurn(other);
+    return;
+  }
+  const otherPassed = rd.passed.includes(other);
+  if(otherPassed){
+    // both duelists passed — no survivor. Bring in the next pair from the queue.
+    if(rd.pendingQueue.length>=2){
+      const nextA = rd.pendingQueue.shift();
+      const nextB = rd.pendingQueue.shift();
+      rd.duelSeats = [nextA, nextB];
+      rd.awaiting = {type:'bid', seat: nextA};
+      bidTurn(nextA);
+    } else if(rd.pendingQueue.length===1){
+      const last = rd.pendingQueue.shift();
+      rd.duelSeats = [last, last];
+      rd.awaiting = {type:'bid', seat: last};
+      bidTurn(last); // this must be the dealer — the forced-bid rule guarantees a winner
+    } else {
+      finishBidding(); // shouldn't happen given the dealer-forced rule, but safe fallback
+    }
+    return;
+  }
+  // the other seat survives (hasn't passed) — bring in ONE new challenger if any remain
+  if(rd.pendingQueue.length===0){
+    finishBidding(); // no more challengers — survivor wins
+    return;
+  }
+  const challenger = rd.pendingQueue.shift();
+  rd.duelSeats = [other, challenger];
+  rd.awaiting = {type:'bid', seat: challenger};
+  bidTurn(challenger);
+}
+function biddingStatusText(){
+  const rd = G.round;
+  return [0,1,2,3].map(seat=>{
+    const name = seat===MY_SEAT ? 'You' : seatLabel(seat);
+    const dealerTag = seat===G.dealer ? ' (dealer)' : '';
+    if(rd.passed.includes(seat)) return `${name}${dealerTag}: Passed`;
+    if(rd.highBidder===seat) return `${name}${dealerTag}: Bid ${rd.highBid} ★`;
+    if((rd.duelSeats||[]).includes(seat)) return `${name}${dealerTag}: Deciding...`;
+    return `${name}${dealerTag}: Waiting to enter`;
+  }).join('\n');
+}
+function presentHumanBid(){
+  const rd = G.round;
+  const isDealer = (MY_SEAT===G.dealer);
+  const mustBid = isDealer && rd.highBid===0;
+  const minBid = rd.highBid===0 ? 16 : rd.highBid+1;
+  setPanelMsg(mustBid ? 'Everyone passed — as dealer you must bid.' : 'Your turn to bid.');
+  setPanelBtns([]);
+  const btns = [];
+  for(let v=minBid; v<=28; v++){
+    btns.push({label:`Bid ${v}`, cls: v===minBid?'primary':'', fn:()=>{
+      hideOverlay();
+      rd.highBid = v; rd.highBidder = MY_SEAT;
+      logMsg(`You bid ${v}${mustBid?' (forced, nobody had bid yet)':''}.`);
+      resolveDuelStep(MY_SEAT, false);
+      pushState();
+    }});
+  }
+  if(!mustBid){
+    btns.push({label:'Pass', cls:'ghost', fn:()=>{
+      hideOverlay();
+      rd.passed.push(MY_SEAT);
+      logMsg('You pass.');
+      resolveDuelStep(MY_SEAT, true);
+      pushState();
+    }});
+  }
+  const explain = (mustBid
+    ? 'Everyone else passed — as dealer, you must choose a bid between 16 and 28. You cannot pass.'
+    : `Current high bid: ${rd.highBid||'none'}. You must bid higher, or pass.`)
+    + '\n\n' + biddingStatusText();
+  showOverlay(mustBid ? 'Everyone Passed' : 'Your Bid', explain, btns);
+}
+function finishBidding(){
+  const rd = G.round;
+  logMsg(`${pname(rd.highBidder)} won the bid at ${rd.highBid}.`);
+  rd.awaiting = {type:'trump', seat: rd.highBidder};
+  doTrumpStep(rd.highBidder);
+  pushState();
+}
+
+/* ---------------- TRUMP ---------------- */
+function doTrumpStep(seat){
+  if(!authorizedFor(seat)){
+    clearDecisionUI();
+    setPanelMsg(`Waiting for ${seatLabel(seat)} to choose trump...`);
+    return;
+  }
+  if(seat===MY_SEAT){ presentTrumpChoice(); return; }
+  const {suit} = handStrength(G.round.hands[seat]);
+  setTrump(suit);
+}
+function presentTrumpChoice(){
+  setPanelMsg('Choosing trump...');
+  setPanelBtns([]);
+  const btns = SUITS.map(s=>({label:`${SUIT_SYM[s]} ${SUIT_NAME[s]}`, cls:'suit-'+s,
+    fn:()=>{ hideOverlay(); setTrump(s); }}));
+  btns.push({label:'2nd (blind pick)', cls:'ghost', fn:()=>{ hideOverlay(); startSecondOption(); }});
+  showOverlay('You Won the Bid!', 'Secretly choose your trump suit, or use "2nd" to blind-pick trump from your next four cards instead — even you will not know which suit until you pick.', btns);
+}
+function startSecondOption(){
+  const rd = G.round;
+  const cards = rd.deck.splice(0,4);
+  rd.pendingSecondOption = cards;
+  rd.awaiting = {type:'trumpSecondPick', seat: MY_SEAT};
+  logMsg(`${pname(MY_SEAT)} is choosing trump using the "2nd" option.`);
+  announce(`${seatLabel(MY_SEAT)} is choosing trump via the "2nd" option`);
+  pushState();
+  doSecondOptionStep(MY_SEAT);
+}
+function doSecondOptionStep(seat){
+  if(!authorizedFor(seat)){
+    clearDecisionUI();
+    setPanelMsg(`Waiting for ${seatLabel(seat)} to pick a face-down card...`);
+    return;
+  }
+  if(seat!==MY_SEAT) return; // "2nd" is human-only; nothing for the host to drive here
+  presentSecondOptionPicker();
+}
+function presentSecondOptionPicker(){
+  const cards = G.round.pendingSecondOption;
+  if(!cards){ return; } // already resolved (e.g. a duplicate dispatch) — nothing to show
+  setPanelMsg('Pick one face-down card to secretly set your trump suit.');
+  document.getElementById('ovTitle').textContent = 'Choose a Face-Down Card';
+  document.getElementById('ovText').textContent = 'Tap one — it will secretly become your trump suit.';
+  const row = document.getElementById('ovBtns');
+  row.innerHTML = '';
+  const cardRow = document.createElement('div');
+  cardRow.style.cssText = 'display:flex; gap:8px; justify-content:center; margin:8px 0;';
+  cards.forEach((c,i)=>{
+    const cb = document.createElement('div');
+    cb.className = 'cardback';
+    cb.style.cssText = 'width:52px; height:74px; margin-left:0; cursor:pointer; border-width:2px;';
+    cb.addEventListener('click', ()=>{ finishSecondOption(i); });
+    cardRow.appendChild(cb);
+  });
+  row.appendChild(cardRow);
+  document.getElementById('overlay').classList.remove('hidden');
+}
+function finishSecondOption(idx){
+  const rd = G.round; // fresh — do not rely on any closured reference from earlier
+  const cards = rd.pendingSecondOption;
+  const chosen = cards[idx];
+  const trumpCountTotal = rd.hands[MY_SEAT].filter(c=>c.s===chosen.s).length + cards.filter(c=>c.s===chosen.s).length;
+  if(trumpCountTotal===1 && G.trumpMode==='show'){
+    logMsg(`${pname(MY_SEAT)} only has one ${SUIT_NAME[chosen.s]} card across their whole 8-card hand — round cancelled (Show Trump rule).`);
+    announce('Round cancelled — too little trump support from the "2nd" option.');
+    rd.pendingSecondOption = null;
+    rd.awaiting = {type:'redealAck', reason:'weakSecondOption', seat: MY_SEAT};
+    pushState();
+    showRedealOverlay();
+    return;
+  }
+  rd.trump = chosen.s;
+  rd.trumpRevealed = false;
+  rd.secondOptionSeat = MY_SEAT;
+  rd.secondOptionCards = cards; // held back — only added to your hand at the same
+                                 // moment everyone else gets their next 4 cards
+  rd.pendingSecondOption = null;
+  logMsg(`${pname(MY_SEAT)} secretly set trump via the "2nd" option.`);
+  document.getElementById('ovTitle').textContent = 'Your Trump Card';
+  document.getElementById('ovText').textContent = `Your trump suit is now ${SUIT_NAME[chosen.s]} — only you know this until it's revealed in play. Your other 3 cards from this draw will appear once the double/redouble step finishes.`;
+  const row = document.getElementById('ovBtns');
+  row.innerHTML = '';
+  const cardWrap = document.createElement('div');
+  cardWrap.style.cssText = 'display:flex; justify-content:center; margin:8px 0;';
+  cardWrap.appendChild(cardEl(chosen, 'trickcard'));
+  row.appendChild(cardWrap);
+  const btn = document.createElement('button');
+  btn.className = 'btn primary';
+  btn.textContent = 'Continue';
+  btn.style.marginTop = '6px';
+  btn.addEventListener('click', ()=>{ hideOverlay(); startBidDoubleOffers(); });
+  row.appendChild(btn);
+}
+function setTrump(suit){
+  const rd = G.round;
+  rd.trump = suit;
+  rd.trumpRevealed = false;
+  logMsg(`Trump chosen secretly by ${pname(rd.highBidder)}.`);
+  startBidDoubleOffers();
+}
+
+/* ---------------- BID DOUBLE / REDOUBLE ----------------
+   Happens right after trump is chosen, before the remaining 4 cards are dealt.
+   BOTH opponents see the Double popup at the same time — whichever accepts
+   first wins it; only if both skip does it stay normal.
+   If doubled, BOTH the bidder and partner see the Redouble popup at the same
+   time — whichever accepts first wins it; if both skip, it stays doubled
+   (does not fall back to normal). Opponents never see the redouble popup. */
+function startBidDoubleOffers(){
+  const rd = G.round;
+  rd.bidMultiplier = 1;
+  rd.bidDoubleSkipped = [];
+  rd.awaiting = {type:'bidDoubleOffer', opponents:[nextSeat(rd.highBidder), prevSeat(rd.highBidder)]};
+  pushState();
+  doBidDoubleOfferStep();
+}
+function doBidDoubleOfferStep(){
+  const rd = G.round;
+  if(!rd.awaiting || rd.awaiting.type!=='bidDoubleOffer') return;
+  const opponents = rd.awaiting.opponents;
+  const skipped = rd.bidDoubleSkipped||[];
+  if(opponents.includes(MY_SEAT) && !skipped.includes(MY_SEAT)){
+    setPanelMsg('Double decision...');
+    setPanelBtns([]);
+    showOverlay('Double the Bid?', `${seatLabel(rd.highBidder)} bid ${rd.highBid}. Either opponent may double — win/loss becomes worth 2 points instead of 1.`, [
+      {label:'Double', cls:'primary', fn:()=>{
+        hideOverlay(); rd.bidMultiplier=2; rd.bidDoubleBy=MY_SEAT; logMsg(`${pname(MY_SEAT)} doubles the bid!`);
+        announce(`${seatLabel(MY_SEAT)} doubles the bid!`);
+        startRedoubleOffers();
+      }},
+      {label:'Skip', cls:'ghost', fn:()=>{
+        hideOverlay(); logMsg('You skip doubling.');
+        rd.bidDoubleSkipped = rd.bidDoubleSkipped||[]; rd.bidDoubleSkipped.push(MY_SEAT);
+        checkBidDoubleResolution();
+      }}
+    ]);
+    return;
+  }
+  if(IS_HOST){
+    for(const opp of opponents){
+      if(isComputerSeat(opp) && !skipped.includes(opp)){
+        setTimeout(()=>{
+          if(!G || !G.round || G.round.awaiting.type!=='bidDoubleOffer') return;
+          const rd2 = G.round;
+          if((rd2.bidDoubleSkipped||[]).includes(opp)) return;
+          if(Math.random()<0.25){
+            rd2.bidMultiplier=2; rd2.bidDoubleBy=opp; logMsg(`${pname(opp)} doubles the bid!`);
+            announce(`${seatLabel(opp)} doubles the bid!`);
+            startRedoubleOffers();
+          } else {
+            rd2.bidDoubleSkipped = rd2.bidDoubleSkipped||[]; rd2.bidDoubleSkipped.push(opp);
+            checkBidDoubleResolution();
+          }
+        }, 600+Math.random()*400);
+        return;
+      }
+    }
+  }
+  if(!opponents.includes(MY_SEAT)){
+    clearDecisionUI();
+    setPanelMsg("Waiting for opponents' Double decision...");
+  }
+}
+function checkBidDoubleResolution(){
+  const rd = G.round;
+  const opponents = rd.awaiting.opponents;
+  const skipped = rd.bidDoubleSkipped||[];
+  if(opponents.every(o=>skipped.includes(o))){
+    dealRemaining(); // both skipped — stays normal
+  } else {
+    pushState();
+    doBidDoubleOfferStep();
+  }
+}
+function startRedoubleOffers(){
+  const rd = G.round;
+  rd.redoubleSkipped = [];
+  rd.awaiting = {type:'redoubleOffer', biddingSide:[rd.highBidder, PARTNER[rd.highBidder]]};
+  pushState();
+  doRedoubleOfferStep();
+}
+function doRedoubleOfferStep(){
+  const rd = G.round;
+  if(!rd.awaiting || rd.awaiting.type!=='redoubleOffer') return;
+  const side = rd.awaiting.biddingSide;
+  const skipped = rd.redoubleSkipped||[];
+  if(side.includes(MY_SEAT) && !skipped.includes(MY_SEAT)){
+    setPanelMsg('Redouble decision...');
+    setPanelBtns([]);
+    showOverlay('Redouble?', 'The bid has been doubled. Either you or your partner may redouble — win/loss becomes worth 4 points instead of 2. Singles will not be offered this round if redoubled.', [
+      {label:'Redouble', cls:'primary', fn:()=>{
+        hideOverlay(); rd.bidMultiplier=4; rd.redoubleBy=MY_SEAT; logMsg(`${pname(MY_SEAT)} redoubles!`);
+        announce(`${seatLabel(MY_SEAT)} redoubles! Bid now worth 4 points.`);
+        dealRemaining();
+      }},
+      {label:'Skip', cls:'ghost', fn:()=>{
+        hideOverlay(); logMsg('You skip redoubling.');
+        rd.redoubleSkipped = rd.redoubleSkipped||[]; rd.redoubleSkipped.push(MY_SEAT);
+        checkRedoubleResolution();
+      }}
+    ]);
+    return;
+  }
+  if(IS_HOST){
+    for(const s of side){
+      if(isComputerSeat(s) && !skipped.includes(s)){
+        setTimeout(()=>{
+          if(!G || !G.round || G.round.awaiting.type!=='redoubleOffer') return;
+          const rd2 = G.round;
+          if((rd2.redoubleSkipped||[]).includes(s)) return;
+          if(Math.random()<0.2){
+            rd2.bidMultiplier=4; rd2.redoubleBy=s; logMsg(`${pname(s)} redoubles!`);
+            announce(`${seatLabel(s)} redoubles! Bid now worth 4 points.`);
+            dealRemaining();
+          } else {
+            rd2.redoubleSkipped = rd2.redoubleSkipped||[]; rd2.redoubleSkipped.push(s);
+            checkRedoubleResolution();
+          }
+        }, 600+Math.random()*400);
+        return;
+      }
+    }
+  }
+  if(!side.includes(MY_SEAT)){
+    clearDecisionUI();
+    setPanelMsg("Waiting for your team's Redouble decision...");
+  }
+}
+function checkRedoubleResolution(){
+  const rd = G.round;
+  const side = rd.awaiting.biddingSide;
+  const skipped = rd.redoubleSkipped||[];
+  if(side.every(s=>skipped.includes(s))){
+    dealRemaining(); // both skipped — stays doubled (bidMultiplier remains 2)
+  } else {
+    pushState();
+    doRedoubleOfferStep();
+  }
+}
+
+function dealRemaining(){
+  const rd = G.round;
+  for(const seat of rd.order4){
+    if(seat===rd.secondOptionSeat){
+      rd.hands[seat].push(...rd.secondOptionCards);
+      rd.secondOptionCards = null;
+      continue;
+    }
+    rd.hands[seat].push(...rd.deck.splice(0,4));
+  }
+
+  for(const seat of [0,1,2,3]){
+    const js = rd.hands[seat].filter(c=>c.r==='J').length;
+    if(js===4){
+      logMsg(`${pname(seat)} was dealt all four Jacks — round cancelled.`);
+      rd.awaiting = {type:'redealAck', reason:'jacks', seat};
+      pushState();
+      showRedealOverlay();
+      return;
+    }
+  }
+  const partner = PARTNER[rd.highBidder];
+  const teamTrumpCount = rd.hands[rd.highBidder].filter(c=>c.s===rd.trump).length
+                       + rd.hands[partner].filter(c=>c.s===rd.trump).length;
+  if(teamTrumpCount===0){
+    logMsg('Bidding side has no trump cards at all — round cancelled.');
+    rd.awaiting = {type:'redealAck', reason:'notrump', seat:rd.highBidder};
+    pushState();
+    showRedealOverlay();
+    return;
+  }
+  if(teamTrumpCount===8){
+    logMsg(`${pname(rd.highBidder)}'s side holds all 8 ${SUIT_NAME[rd.trump]} — opponents have none. Round cancelled.`);
+    rd.awaiting = {type:'redealAck', reason:'alltrump', seat:rd.highBidder};
+    pushState();
+    showRedealOverlay();
+    return;
+  }
+  for(const seat of [0,1,2,3]){
+    if(seat===rd.first) continue; // this rule doesn't apply to the first bidder
+    const pts = rd.hands[seat].reduce((sum,c)=>sum+RANK_POINTS[c.r],0);
+    if(pts===0){
+      logMsg(`${pname(seat)}'s full 8-card hand is worth 0 points — round cancelled.`);
+      rd.awaiting = {type:'redealAck', reason:'noPointsHand', seat};
+      pushState();
+      showRedealOverlay();
+      return;
+    }
+  }
+
+  if(rd.bidMultiplier===4){
+    logMsg('The bid was redoubled — Singles is not offered this round.');
+    beginPlay();
+    return;
+  }
+  rd.singlesSkipped = [];
+  rd.awaiting = {type:'singlesOffer'};
+  pushState();
+  doSinglesOfferStep();
+}
+
+/* ---------------- SINGLES / DOUBLE ---------------- */
+// Singles is NOT restricted to the bidder — any of the four players may offer
+// to play it. ALL FOUR see the popup at the same time; whoever accepts FIRST
+// gets it, and it's cancelled only once all four have declined.
+function doSinglesOfferStep(){
+  const rd = G.round;
+  if(!rd.awaiting || rd.awaiting.type!=='singlesOffer') return;
+  const skipped = rd.singlesSkipped||[];
+  if(!skipped.includes(MY_SEAT)){
+    setPanelMsg('Singles decision...');
+    setPanelBtns([]);
+    showOverlay('Play Singles?', 'Any player may offer to play this round alone (Singles) — first to accept gets it. Go it alone for a shot at +3 game points, or risk -3 if you miss even one trick.', [
+      {label:'Play Singles', cls:'primary', fn:()=>{
+        hideOverlay(); rd.singles=MY_SEAT; logMsg('You go Singles.');
+        announce('You chose to play Singles!'); afterSinglesDecided();
+      }},
+      {label:'No Single', cls:'ghost', fn:()=>{
+        hideOverlay(); logMsg('You chose No Single.');
+        rd.singlesSkipped = rd.singlesSkipped||[]; rd.singlesSkipped.push(MY_SEAT);
+        checkSinglesResolution();
+      }}
+    ]);
+    return;
+  }
+  if(IS_HOST){
+    for(const s of [0,1,2,3]){
+      if(isComputerSeat(s) && !skipped.includes(s)){
+        setTimeout(()=>{
+          if(!G || !G.round || G.round.awaiting.type!=='singlesOffer') return;
+          const rd2 = G.round;
+          if((rd2.singlesSkipped||[]).includes(s)) return;
+          const {score} = handStrength(rd2.hands[s]);
+          if(score>16 && Math.random()<0.3){
+            rd2.singles = s;
+            logMsg(`${pname(s)} goes Singles!`);
+            announce(`${seatLabel(s)} chose to play Singles!`);
+            afterSinglesDecided();
+          } else {
+            rd2.singlesSkipped = rd2.singlesSkipped||[]; rd2.singlesSkipped.push(s);
+            announce(`${seatLabel(s)} chose No Single.`);
+            checkSinglesResolution();
+          }
+        }, 600+Math.random()*400);
+        return;
+      }
+    }
+  }
+  if(skipped.includes(MY_SEAT)){
+    clearDecisionUI();
+    setPanelMsg("Waiting for the others' Singles decision...");
+  }
+}
+function checkSinglesResolution(){
+  const rd = G.round;
+  if((rd.singlesSkipped||[]).length>=4){
+    afterSinglesDecided(); // all four declined — normal play this round
+  } else {
+    pushState();
+    doSinglesOfferStep();
+  }
+}
+function afterSinglesDecided(){
+  const rd = G.round;
+  if(rd.singles==null){ beginPlay(); return; }
+  const opponentSeat = nextSeat(rd.singles);
+  rd.awaiting = {type:'double', seat: opponentSeat};
+  pushState();
+  doDoubleStep(opponentSeat);
+}
+function doDoubleStep(seat){
+  if(!authorizedFor(seat)){
+    clearDecisionUI();
+    setPanelMsg(`Waiting for ${seatLabel(seat)}'s Double decision...`);
+    return;
+  }
+  const rd = G.round;
+  if(seat===MY_SEAT){
+    setPanelMsg('Double decision...');
+    setPanelBtns([]);
+    showOverlay('Double the Stakes?', `${seatLabel(rd.singles)} is playing Singles. Double means their +3/-3 becomes +6/-6.`, [
+      {label:'Double', cls:'primary', fn:()=>{ hideOverlay(); rd.doubled=true; logMsg('Double called.'); beginPlay(); }},
+      {label:'No thanks', cls:'ghost', fn:()=>{ hideOverlay(); beginPlay(); } },
+    ]);
+    return;
+  }
+  if(Math.random()<0.35){ rd.doubled=true; logMsg(`${pname(seat)} doubles the Singles bet.`); }
+  beginPlay();
+}
+
+/* ---------------- PLAY ---------------- */
+function beginPlay(){
+  const rd = G.round;
+  rd.phase='play';
+  if(rd.singles!=null){
+    // Singles has its own trump rule: whatever suit gets led in the very first
+    // trick becomes THIS round's trump, replacing the bid's original trump.
+    rd.leader = rd.singles;
+    rd.originalTrump = rd.trump;
+    rd.trump = null;
+    rd.trumpRevealed = false;
+  } else {
+    rd.leader = rd.first;
+  }
+  rd.awaiting = {type:'play', seat: rd.leader};
+  pushState();
+  playTurn(rd.leader);
+}
+function currentBestTrumpRank(rd){
+  if(!rd.trumpRevealed) return null;
+  let best = null;
+  for(const s of Object.keys(rd.current)){
+    const c = rd.current[s];
+    if(c.s===rd.trump){
+      const r = rankIdx(c.r);
+      if(best===null || r>best) best = r;
+    }
+  }
+  return best;
+}
+function legalCards(seat){
+  const rd = G.round;
+  const hand = rd.hands[seat];
+  const ledSuit = rd.leadSuit;
+  if(!ledSuit) return hand.slice();
+  const followers = hand.filter(c=>c.s===ledSuit);
+  if(followers.length>0) return followers;
+  const bestTrumpRank = currentBestTrumpRank(rd);
+  if(bestTrumpRank!=null){
+    // someone already trumped in this trick — small trump cards can't be
+    // played under it; only a bigger trump or a non-trump discard is legal
+    const overOrSafe = hand.filter(c=> c.s!==rd.trump || rankIdx(c.r)>bestTrumpRank);
+    if(overOrSafe.length>0) return overOrSafe;
+  }
+  return hand.slice();
+}
+function seatOutOfPlay(seat){
+  const rd = G.round;
+  if(rd.singles==null) return false;
+  return seat===PARTNER[rd.singles];
+}
+function playTurn(seat){
+  const rd = G.round;
+  if(seatOutOfPlay(seat)){ playTurn(nextSeat(seat)); return; }
+  rd.awaiting = {type:'play', seat};
+  const legal = legalCards(seat);
+  if(legal.length===1){
+    if(!authorizedFor(seat)) return;
+    playCard(seat, legal[0]);
+    return;
+  }
+  if(!authorizedFor(seat)){
+    clearDecisionUI();
+    setPanelMsg(`Waiting for ${seatLabel(seat)}...`);
+    setPlayable([]);
+    return;
+  }
+  if(seat===MY_SEAT){ presentHumanPlay(legal); }
+  else { setTimeout(()=>{
+    if(!G || !G.round || G.round.awaiting.type!=='play' || G.round.awaiting.seat!==seat) return;
+    computerPlay(seat, legalCards(seat));
+  }, 700); }
+}
+function legalIsDiscardOnly(seat){
+  const rd = G.round;
+  const hand = rd.hands[seat];
+  if(!rd.leadSuit) return false;
+  return !hand.some(c=>c.s===rd.leadSuit);
+}
+let TRUMP_ATTEMPT_MODE = false; // true = this next card tap is a deliberate trump attempt
+function presentHumanPlay(legal){
+  const rd = G.round;
+  if(rd.forcedTrumpFor===MY_SEAT){
+    const trumpCards = legal.filter(c=>c.s===rd.trump);
+    setPanelBtns([]);
+    setCenterActions([]);
+    if(trumpCards.length>0){
+      setPanelMsg(`Trump revealed: ${SUIT_NAME[rd.trump]} — you have trump, so you must play it.`);
+      setPlayable(trumpCards.map(c=>c.id));
+    } else {
+      setPanelMsg(`Trump revealed: ${SUIT_NAME[rd.trump]}, but you have none — play any card.`);
+      setPlayable(legal.map(c=>c.id));
+    }
+    return;
+  }
+  const isVoid = rd.leadSuit && legalIsDiscardOnly(MY_SEAT) && !rd.trumpRevealed;
+  if(isVoid){
+    setPanelMsg(`You have no ${SUIT_NAME[rd.leadSuit]}.`);
+    setPanelBtns([]);
+    setPlayable([]);
+    setCenterActions([
+      {label:'Trump', cls:'primary', fn:()=>{
+        if(G.trumpMode==='show'){
+          rd.trumpRevealed = true;
+          const trumpCards = legal.filter(c=>c.s===rd.trump);
+          if(trumpCards.length>0) rd.forcedTrumpFor = MY_SEAT;
+          logMsg(`${pname(MY_SEAT)} chose to Trump — trump revealed: ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}.`);
+          announce(`Trump revealed: ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}`);
+          pushState();
+          setCenterActions([]);
+          if(trumpCards.length>0){
+            setPanelMsg(`Trump revealed: ${SUIT_NAME[rd.trump]} — you have trump, so you must play it.`);
+            setPlayable(trumpCards.map(c=>c.id));
+          } else {
+            setPanelMsg(`Trump revealed: ${SUIT_NAME[rd.trump]}, but you have none — play any card.`);
+            setPlayable(legal.map(c=>c.id));
+          }
+          return;
+        }
+        TRUMP_ATTEMPT_MODE = true;
+        setPanelMsg('Choose one of your own cards to attempt trump with.');
+        setCenterActions([]);
+        setPlayable(legal.map(c=>c.id));
+      }},
+      {label:"Don't Trump", cls:'ghost', fn:()=>{
+        TRUMP_ATTEMPT_MODE = false;
+        setPanelMsg('Choose any card to discard safely.');
+        setCenterActions([]);
+        setPlayable(legal.map(c=>c.id));
+      }}
+    ]);
+    return;
+  }
+  TRUMP_ATTEMPT_MODE = false;
+  if(rd.leadSuit && legalIsDiscardOnly(MY_SEAT) && rd.trumpRevealed){
+    setPanelMsg(`You have no ${SUIT_NAME[rd.leadSuit]} — tap any card to play, or a ${SUIT_NAME[rd.trump]} to trump in.`);
+  } else {
+    setPanelMsg('Your turn — tap a highlighted card to play it.');
+  }
+  setPanelBtns([]);
+  setPlayable(legal.map(c=>c.id));
+  const trumpKQ = rd.trumpRevealed
+    ? rd.hands[MY_SEAT].filter(c=>c.s===rd.trump && (c.r==='K'||c.r==='Q'))
+    : [];
+  const myTeam = TEAM[MY_SEAT];
+  const myTeamWonTrick = rd.tricks.some(t=>TEAM[t.winner]===myTeam);
+  const btns = [];
+  if(rd.trumpRevealed && trumpKQ.length===2 && myTeamWonTrick && !rd.pairDeclared[myTeam]){
+    btns.push({label:'Declare Pair (+4)', cls:'primary', fn:()=>{
+      rd.pairDeclared[myTeam]=true;
+      rd.pairDeclaredBy = MY_SEAT;
+      logMsg(`${pname(MY_SEAT)} declares the pair (King+Queen of trump) — +4 bonus noted.`);
+      announce(`${pname(MY_SEAT)} declares the pair! +4 bonus`);
+      pushState();
+      presentHumanPlay(legal);
+    }});
+  }
+  setCenterActions(btns);
+}
+function computerPlay(seat, legal){
+  const rd = G.round;
+  let choice;
+  let skipTrumpCheck = false;
+  if(rd.leadSuit && legalIsDiscardOnly(seat)){
+    const trumpsInHand = legal.filter(c=>c.s===rd.trump);
+    if(seat===rd.highBidder && trumpsInHand.length>0 && !rd.trumpRevealed){
+      // the bidder knows their own secret trump suit and can deliberately play it
+      choice = trumpsInHand[0];
+    } else if(rd.trumpRevealed && trumpsInHand.length>0 && Math.random()<0.6){
+      // trump is already known to everyone — anyone can now deliberately trump in
+      choice = trumpsInHand[0];
+    } else if(!rd.trumpRevealed && Math.random()<0.5){
+      // decides not to attempt trump this time — a safe discard regardless of suit
+      choice = legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
+      skipTrumpCheck = true;
+    } else if(!rd.trumpRevealed && G.trumpMode==='show'){
+      // Show Trump: attempting trump reveals it FIRST, then they choose informed
+      rd.trumpRevealed = true;
+      logMsg(`${pname(seat)} chose to Trump — trump revealed: ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}.`);
+      announce(`Trump revealed: ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}`);
+      choice = trumpsInHand.length>0 ? trumpsInHand[0] : legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
+    } else {
+      // Hidden Trump: attempts trump by choosing a card, not knowing whether it matches
+      choice = legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
+    }
+  } else {
+    choice = legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
+  }
+  playCard(seat, choice, {skipTrumpCheck});
+}
+function playCard(seat, card, opts){
+  opts = opts || {};
+  const skipTrumpCheck = (seat===MY_SEAT) ? !TRUMP_ATTEMPT_MODE : !!opts.skipTrumpCheck;
+  TRUMP_ATTEMPT_MODE = false;
+  const rd = G.round;
+  if(rd.forcedTrumpFor===seat) rd.forcedTrumpFor = null;
+  rd.hands[seat] = rd.hands[seat].filter(c=>c.id!==card.id);
+  rd.current[seat] = card;
+  rd.playOrder = rd.playOrder || [];
+  rd.playOrder.push(seat);
+  const hadLeadSuit = rd.leadSuit;
+  if(!rd.leadSuit) rd.leadSuit = card.s;
+  logMsg(`${pname(seat)} plays ${card.r}${SUIT_SYM[card.s]}.`);
+
+  // Singles round: the suit led in the very first trick becomes this round's
+  // trump (openly, not secret), replacing whatever the bid's trump was.
+  if(rd.singles!=null && !hadLeadSuit && rd.trump===null){
+    rd.trump = card.s;
+    rd.trumpRevealed = true;
+    logMsg(`${pname(seat)} leads ${SUIT_NAME[card.s]} — this is the Single Trump colour for this round!`);
+    announce(`Single Trump colour: ${SUIT_SYM[card.s]} ${SUIT_NAME[card.s]}`);
+    const oppSeats = [0,1,2,3].filter(s=>TEAM[s]!==TEAM[rd.singles]);
+    const anyOppHasSuit = oppSeats.some(s=>rd.hands[s].some(c=>c.s===rd.trump));
+    if(!anyOppHasSuit){
+      logMsg('Neither opponent holds the Single Trump colour — Singles is automatically cancelled. Reverting to normal play.');
+      announce('Singles cancelled — neither opponent holds that suit!');
+      // Undo the leading card entirely — the whole trick restarts fresh
+      // under normal rules, led by the normal (non-Singles) leader.
+      rd.hands[seat].push(card);
+      delete rd.current[seat];
+      rd.playOrder = [];
+      rd.leadSuit = null;
+      rd.singles = null;
+      rd.doubled = false;
+      rd.trump = rd.originalTrump;
+      rd.trumpRevealed = false;
+      rd.leader = rd.first;
+      rd.awaiting = {type:'play', seat: rd.first};
+      pushState();
+      playTurn(rd.first);
+      return;
+    }
+  }
+  const wasAttempt = !skipTrumpCheck;
+  // Attempting trump reveals the suit to everyone regardless of whether this
+  // specific card matches it — only whether THIS card wins as trump depends
+  // on the match (handled separately by beats()). Not relevant once Singles
+  // has already locked in (and revealed) the trump above.
+  if(rd.singles==null && hadLeadSuit && card.s!==hadLeadSuit && !rd.trumpRevealed && wasAttempt){
+    rd.trumpRevealed = true;
+    if(card.s===rd.trump){
+      logMsg(`${pname(seat)} trumps in! Trump revealed: ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}!`);
+      announce(`${seatLabel(seat)} trumps in! Trump is ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}`);
+    } else {
+      logMsg(`${pname(seat)} attempted trump with ${card.r}${SUIT_SYM[card.s]} — not a match, but trump is now revealed: ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}.`);
+      announce(`${seatLabel(seat)} attempted trump — revealed: ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}`);
+    }
+  }
+  const playedSeats = Object.keys(rd.current).map(Number);
+  const outCount = rd.singles!=null ? 1 : 0;
+  if(playedSeats.length + outCount === 4){
+    rd.awaiting = {type:'trickPause'};
+    pushState();
+    setTimeout(resolveTrick, 2000);
+  } else {
+    playTurn(nextSeat(seat));
+    pushState();
+  }
+}
+function beats(card, currentBest, rd){
+  const trump = rd.trumpRevealed ? rd.trump : null;
+  const cIsTrump = trump && card.s===trump;
+  const bIsTrump = trump && currentBest.s===trump;
+  if(cIsTrump && !bIsTrump) return true;
+  if(!cIsTrump && bIsTrump) return false;
+  if(cIsTrump && bIsTrump) return rankIdx(card.r) > rankIdx(currentBest.r);
+  if(card.s!==currentBest.s) return false;
+  return rankIdx(card.r) > rankIdx(currentBest.r);
+}
+function resolveTrick(){
+  const rd = G.round;
+  const entries = rd.playOrder.map(s=>({seat:s, card:rd.current[s]}));
+  let winner = entries[0];
+  for(const e of entries.slice(1)) winner = beats(e.card, winner.card, rd) ? e : winner;
+  const pts = entries.reduce((sum,e)=>sum+RANK_POINTS[e.card.r],0);
+  const team = TEAM[winner.seat];
+  if(team==='A') rd.pointsA += pts; else rd.pointsB += pts;
+  rd.tricks.push({winner:winner.seat, cards:entries, pts});
+  logMsg(`${pname(winner.seat)} wins the trick (${pts} pts).`);
+
+  rd.current = {}; rd.leadSuit = null; rd.playOrder = []; rd.trickNo++;
+
+  if(rd.singles!=null && rd.trickNo===2 && !rd.partnerRevealShown){
+    rd.partnerRevealShown = true;
+    logMsg(`${pname(rd.singles)} may now view their partner's hand once.`);
+  }
+
+  if(rd.singles!=null && TEAM[winner.seat]!==TEAM[rd.singles]){
+    logMsg(`${pname(winner.seat)} (opponent) won a trick — Singles has already failed, ending the round early.`);
+    announce(`${seatLabel(winner.seat)} won a trick — Singles fails, round ends early.`);
+    rd.awaiting = {type:'trickPause'};
+    pushState();
+    setTimeout(()=>{ try{ endRound(); }catch(e){ console.error('endRound failed', e); } }, 400);
+    return;
+  }
+
+  const cardCountSeat = (rd.singles!=null) ? rd.singles : rd.first;
+  const cardsLeft = rd.hands[cardCountSeat].length;
+  if(cardsLeft===0){
+    rd.awaiting = {type:'trickPause'};
+    pushState();
+    setTimeout(()=>{ try{ endRound(); }catch(e){ console.error('endRound failed', e); } }, 400);
+  } else {
+    rd.leader = winner.seat;
+    rd.awaiting = {type:'play', seat: winner.seat};
+    pushState();
+    setTimeout(()=>playTurn(winner.seat), 100);
+  }
+}
+
+/* ---------------- ROUND END / SCORING ---------------- */
+function applyGamePoints(team, pts){
+  const other = team==='A' ? 'B' : 'A';
+  const current = team==='A' ? G.scoreA : G.scoreB;
+  if(pts<0){
+    const newVal = current + pts;
+    if(newVal<0){
+      const overflow = -newVal; // the part that would have gone below zero
+      if(team==='A'){ G.scoreA = 0; G.scoreB += overflow; }
+      else { G.scoreB = 0; G.scoreA += overflow; }
+      const teamNames = team==='A' ? (seatLabel(0)+' & '+seatLabel(2)) : (seatLabel(1)+' & '+seatLabel(3));
+      const otherNames = other==='A' ? (seatLabel(0)+' & '+seatLabel(2)) : (seatLabel(1)+' & '+seatLabel(3));
+      logMsg(`${teamNames} would have dropped below 0 — the ${overflow} extra point(s) go to ${otherNames} instead.`);
+    } else {
+      if(team==='A') G.scoreA = newVal; else G.scoreB = newVal;
+    }
+  } else {
+    if(team==='A') G.scoreA += pts; else G.scoreB += pts;
+  }
+}
+function endRound(){
+  const rd = G.round;
+  if(!rd.trumpRevealed){
+    logMsg('The round finished without the trump suit ever being shown — round cancelled.');
+    rd.awaiting = {type:'redealAck', reason:'notrumpshown', seat:rd.highBidder};
+    pushState();
+    return;
+  }
+
+  const countA = rd.tricks.filter(t=>TEAM[t.winner]==='A').length;
+  const countB = rd.tricks.filter(t=>TEAM[t.winner]==='B').length;
+  const sweepTeam = countA===8 ? 'A' : countB===8 ? 'B' : null;
+
+  // Redouble rounds are all-or-nothing: a clean 8-0 sweep by either side is
+  // too extreme to score at ×4, so the round is voided instead.
+  if(rd.singles==null && rd.bidMultiplier===4 && sweepTeam){
+    logMsg(`${sweepTeam==='A'?pname(0)+' & '+pname(2):pname(1)+' & '+pname(3)} swept all 8 tricks on a redoubled round — too extreme, round cancelled.`);
+    rd.awaiting = {type:'redealAck', reason:'redoubleSweep', seat:rd.highBidder};
+    pushState();
+    return;
+  }
+
+  const bidTeam = TEAM[rd.highBidder];
+  const oppTeam = bidTeam==='A' ? 'B' : 'A';
+  const bidTeamPts = bidTeam==='A' ? rd.pointsA : rd.pointsB;
+  let effectiveBidTeamPts = bidTeamPts;
+  if(rd.pairDeclared[bidTeam]) effectiveBidTeamPts += 4;
+  if(rd.pairDeclared[oppTeam]) effectiveBidTeamPts -= 4;
+  const madeIt = effectiveBidTeamPts >= rd.highBid;
+
+  let overText, pairNote = '';
+  if(rd.pairDeclared[bidTeam]) pairNote += ` ${seatLabel(rd.highBidder)}'s side declared the pair — needed only ${Math.max(0, rd.highBid-4)} real card points instead of ${rd.highBid}.`;
+  if(rd.pairDeclared[oppTeam]){
+    const oppNames = oppTeam==='A' ? (seatLabel(0)+' & '+seatLabel(2)) : (seatLabel(1)+' & '+seatLabel(3));
+    pairNote += ` ${oppNames} declared the pair — effectively worth +4 against the bid.`;
+  }
+
+  if(rd.singles!=null){
+    // Singles ignores the bid entirely — the ONLY thing that matters is
+    // whether the Singles player took every trick. Success scores for their
+    // side; failure scores for the OPPONENT side outright (not a penalty to
+    // the Singles side that might get floored at zero).
+    const wonAll = rd.tricks.every(t=>t.winner===rd.singles);
+    let pts = wonAll ? 3 : -3;
+    if(rd.doubled) pts *= 2;
+    const singlesTeam = TEAM[rd.singles];
+    const oppTeam = singlesTeam==='A' ? 'B' : 'A';
+    if(wonAll){
+      applyGamePoints(singlesTeam, Math.abs(pts));
+    } else {
+      applyGamePoints(oppTeam, Math.abs(pts));
+    }
+    const singlesNote = ` ${seatLabel(rd.singles)} played Singles and ${wonAll?'took every trick':'missed at least one trick'} — ${wonAll?'their side':'the opponents'} score ${Math.abs(pts)} point(s)${rd.doubled?' (doubled)':''}.`;
+    overText = `Singles round.${singlesNote}${pairNote}`;
+    logMsg('Round over. '+overText);
+    G.roundHistory = G.roundHistory || [];
+    G.roundHistory.push({
+      n: G.roundHistory.length+1, bidder: seatLabel(rd.highBidder), bidTeam,
+      bid: rd.highBid, took: bidTeamPts, madeIt: wonAll, mult: rd.bidMultiplier||1,
+      singlesPlayer: seatLabel(rd.singles), sweepTeam: null, scoreA: G.scoreA, scoreB: G.scoreB,
+    });
+    rd.awaiting = {type:'roundEndAck', overText};
+    pushState();
+    return;
+  }
+
+  let gamePts = (madeIt ? 1 : -1) * (rd.bidMultiplier||1);
+
+  // Sweep bonus: only for normal/double rounds (not redoubled) — whichever
+  // side wins all 8 tricks gets +1 extra, on top of the usual swing.
+  let sweepNote = '';
+  if(rd.bidMultiplier!==4 && sweepTeam){
+    applyGamePoints(sweepTeam, 1);
+    const sweepNames = sweepTeam==='A' ? (seatLabel(0)+' & '+seatLabel(2)) : (seatLabel(1)+' & '+seatLabel(3));
+    sweepNote = ` ${sweepNames} swept all 8 tricks — +1 bonus point!`;
+  }
+
+  applyGamePoints(bidTeam, gamePts);
+
+  if(G.boardMode==='double'){
+    if(madeIt) G.boxes[bidTeam].red = true; else G.boxes[bidTeam].black = true;
+  }
+
+  let milestoneNote = '';
+  if(G.scoreA>0 && G.scoreA%6===0) milestoneNote += ` 🎉 ${seatLabel(0)} & ${seatLabel(2)} have reached ${G.scoreA} points!`;
+  if(G.scoreB>0 && G.scoreB%6===0) milestoneNote += ` 🎉 ${seatLabel(1)} & ${seatLabel(3)} have reached ${G.scoreB} points!`;
+
+  const multNote = rd.bidMultiplier===4 ? ' (Redoubled — ×4!)' : rd.bidMultiplier===2 ? ' (Doubled — ×2)' : '';
+  overText = `${seatLabel(rd.highBidder)}'s side needed ${rd.highBid} and took ${bidTeamPts} card points — ${madeIt?'bid made':'bid failed'}${multNote}.${pairNote}${sweepNote}${milestoneNote}`;
+  logMsg('Round over. '+overText);
+
+  G.roundHistory = G.roundHistory || [];
+  G.roundHistory.push({
+    n: G.roundHistory.length+1,
+    bidder: seatLabel(rd.highBidder),
+    bidTeam,
+    bid: rd.highBid,
+    took: bidTeamPts,
+    madeIt,
+    mult: rd.bidMultiplier||1,
+    singlesPlayer: null,
+    sweepTeam,
+    scoreA: G.scoreA,
+    scoreB: G.scoreB,
+  });
+
+  rd.awaiting = {type:'roundEndAck', overText};
+  pushState();
+}
+
+/* ---------------- RENDERING ---------------- */
+function renderTrumpSeed(){
+  // The floating trump badge was prone to overlapping trick cards on some
+  // screen sizes. Trump status now shows as text in the seat's name pill
+  // instead (see seatStatusSuffix), so this element stays permanently hidden.
+  const el = document.getElementById('trumpSeed');
+  if(el) el.classList.add('hidden');
+}
+function cardEl(card, extraClass){
+  const div = document.createElement('div');
+  const isRed = RED_SUITS.includes(card.s);
+  div.className = `card ${isRed?'red':''} ${extraClass||''}`;
+  div.innerHTML = `<div class="rank">${card.r}${SUIT_SYM[card.s]}</div><div class="suit">${SUIT_SYM[card.s]}</div><div class="rank bottom">${card.r}${SUIT_SYM[card.s]}</div>`;
+  div.dataset.id = card.id;
+  return div;
+}
+function setPlayable(ids){ PLAYABLE_IDS = ids || []; renderHand(); }
 function renderHand(){
-  if(room.phase==='trump'||room.phase==='cancelled'||room.phase==='reveal'||room.phase==='waiting') return '';
-  const hand=myHand.cards||[];
-  let valid=hand;
-  if(room.phase==='playing'){
-    valid = (mySeat()===seatToAct() && (room.currentTrick||[]).length<4) ? computeValidCards(hand, room.currentTrick||[], room.trumpSuit) : [];
+  const row = document.getElementById('handRow');
+  row.innerHTML='';
+  if(!G || !G.round || MY_SEAT==null) return;
+  const hand = (G.round.hands[MY_SEAT]||[]).slice().sort((a,b)=>{
+    if(a.s!==b.s) return SUITS.indexOf(a.s)-SUITS.indexOf(b.s);
+    return rankIdx(a.r)-rankIdx(b.r);
+  });
+  for(const c of hand){
+    const playable = PLAYABLE_IDS.includes(c.id);
+    const el = cardEl(c, playable? 'playable':'disabled');
+    if(playable){
+      el.addEventListener('click', ()=>{ setPlayable([]); setPanelMsg('Playing...'); playCard(MY_SEAT, c); });
+    }
+    row.appendChild(el);
   }
-  return `<div class="row" style="justify-content:center;padding-top:12px;border-top:1px solid var(--felt-light);">${hand.map(c=>{const si=suitInfo(c.suit);const isValid=valid.some(v=>v.suit===c.suit&&v.rank===c.rank);const clickable=room.phase==='playing'&&isValid;return `<div class="card${clickable?'':' disabled'}" ${clickable?`onclick="playCard('${c.suit}',${c.rank})"`:''}>${rankLabel(c.rank)}<span style="color:${si.red?'var(--danger)':'inherit'};">${si.sym}</span></div>`;}).join('')}</div>`;
 }
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+function seatStatusSuffix(seat, rd){
+  let s = '';
+  if(rd.highBidder===seat && rd.highBid) s += ` (${rd.highBid})`;
+  if(rd.bidDoubleBy===seat) s += ' 🔷×2';
+  if(rd.redoubleBy===seat) s += ' 🔶×4';
+  if(rd.singles===seat) s += ' 🃏S';
+  if(rd.pairDeclaredBy===seat) s += ' 👑P';
+  if(rd.highBidder===seat && rd.trump){
+    const isRed = RED_SUITS.includes(rd.trump);
+    const suitHtml = `<span style="font-size:19px;font-weight:800;color:${isRed?'#e05a5a':'#f3ead8'};vertical-align:-2px;">${SUIT_SYM[rd.trump]}</span>`;
+    if(rd.trumpRevealed) s += ' '+suitHtml;
+    else if(MY_SEAT===seat) s += ' '+suitHtml+'<span style="font-size:10px;">🔒</span>';
+    else s += ' 🂠';
+  }
+  return s;
+}
+function renderTable(){
+  if(!G || !G.round || MY_SEAT==null) return;
+  const rd = G.round;
 
-function toggleHistory(){ showHistory=!showHistory; render(); }
+  // Trick slots first and unconditionally — this is the most visually
+  // important part, and must never be left stale by an error elsewhere below.
+  try {
+    ['Bottom','Left','Top','Right'].forEach(slot=>{
+      const seat = [0,1,2,3].find(s=>slotOf(s)===slot);
+      const slotEl = document.getElementById('slot'+slot);
+      slotEl.innerHTML='';
+      const card = rd.current[seat];
+      if(card) slotEl.appendChild(cardEl(card,'trickcard'));
+    });
+  } catch(e){ console.error('trick slot render failed', e); }
 
+  try {
+    ['Left','Top','Right'].forEach(slot=>{
+      const seat = [0,1,2,3].find(s=>slotOf(s)===slot);
+      const wrap = document.getElementById('cb'+slot);
+      wrap.innerHTML='';
+      const n = rd.hands[seat] ? rd.hands[seat].length : 0;
+      for(let i=0;i<n;i++){ const b=document.createElement('div'); b.className='cardback'; wrap.appendChild(b); }
+      document.getElementById('seat'+slot).querySelector('.name').innerHTML =
+        escapeHtml(seatLabel(seat)) + seatStatusSuffix(seat, rd);
+    });
+    document.getElementById('seatBottom').querySelector('.name').innerHTML =
+      'You' + seatStatusSuffix(0, rd);
+  } catch(e){ console.error('seat label render failed', e); }
+
+  try {
+    ['Bottom','Left','Top','Right'].forEach(slot=>{
+      document.getElementById('seat'+slot).classList.remove('active','bidder','dealer');
+    });
+    if(rd.highBidder!=null) document.getElementById('seat'+slotOf(rd.highBidder)).classList.add('bidder');
+    if(G.dealer!=null) document.getElementById('seat'+slotOf(G.dealer)).classList.add('dealer');
+    if(rd.awaiting && (rd.awaiting.type==='bid' || rd.awaiting.type==='play') && rd.awaiting.seat!=null){
+      document.getElementById('seat'+slotOf(rd.awaiting.seat)).classList.add('active');
+    }
+  } catch(e){ console.error('seat class render failed', e); }
+
+  try { renderTrumpSeed(); } catch(e){ console.error('trump seed render failed', e); }
+}
+function renderScore(){
+  document.getElementById('scoreA').textContent = G.scoreA;
+  document.getElementById('scoreB').textContent = G.scoreB;
+  const single = G.boardMode==='single';
+  document.getElementById('podA').classList.toggle('hidden', single);
+  document.getElementById('podB').classList.toggle('hidden', single);
+  document.getElementById('podUnified').classList.toggle('hidden', !single);
+  if(single){
+    const diff = G.scoreA - G.scoreB;
+    const lblEl = document.getElementById('unifiedLabel');
+    const valEl = document.getElementById('unifiedScore');
+    if(diff===0){
+      lblEl.textContent = 'Score';
+      valEl.textContent = 0;
+    } else if(diff>0){
+      lblEl.textContent = seatLabel(0)+' & '+seatLabel(2);
+      valEl.textContent = diff;
+    } else {
+      lblEl.textContent = seatLabel(1)+' & '+seatLabel(3);
+      valEl.textContent = -diff;
+    }
+  }
+}
+function renderBoardStrip(){
+  const el = document.getElementById('boardstrip');
+  el.innerHTML='';
+  if(!G || G.boardMode!=='double') return;
+  ['A','B'].forEach(team=>{
+    const label = document.createElement('div'); label.className='boxlabel';
+    label.textContent = team==='A' ? (seatLabel(0)+' & '+seatLabel(2)) : (seatLabel(1)+' & '+seatLabel(3));
+    const box = document.createElement('div'); box.className='box';
+    const red = document.createElement('div'); red.className='cell red'+(G.boxes[team].red?' filled':'');
+    const blk = document.createElement('div'); blk.className='cell black'+(G.boxes[team].black?' filled':'');
+    box.appendChild(red); box.appendChild(blk);
+    el.appendChild(label); el.appendChild(box);
+  });
+}
+function renderLog(){
+  const box = document.getElementById('logLines');
+  box.innerHTML='';
+  if(!G || !G.round || !G.round.log) return;
+  for(const line of G.round.log){
+    const d = document.createElement('div'); d.textContent=line; box.appendChild(d);
+  }
+}
 function renderHistory(){
-  if(!room.history || room.history.length===0) return '';
-  if(!showHistory) return `<div class="center" style="margin-bottom:16px;"><button class="secondary" onclick="toggleHistory()">Show round history</button></div>`;
-  const header=`<tr class="sub"><td>Round</td>${room.players.map(p=>`<td class="center">${p.name}</td>`).join('')}</tr>`;
-  const rows=room.history.map(h=>`<tr><td>${h.round}</td>${room.players.map(p=>{const sc=h.roundScores[p.uid];return `<td class="center" style="color:${sc>=0?'var(--success)':'var(--danger)'};">${sc>=0?'+':''}${sc}</td>`;}).join('')}</tr>`).join('');
-  return `<div class="panel"><div class="sub" style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">Round history <button class="secondary" onclick="toggleHistory()">Hide</button></div><table class="hist">${header}${rows}</table></div>`;
+  const box = document.getElementById('historyLines');
+  box.innerHTML='';
+  if(!G || !G.roundHistory || G.roundHistory.length===0){
+    const d = document.createElement('div');
+    d.textContent = 'No rounds completed yet.';
+    box.appendChild(d);
+    return;
+  }
+  for(const r of G.roundHistory.slice().reverse()){
+    const d = document.createElement('div');
+    const bidTeamNames = r.bidTeam==='A' ? (seatLabel(0)+' & '+seatLabel(2)) : (seatLabel(1)+' & '+seatLabel(3));
+    const multTxt = r.mult===4 ? ' (×4 redoubled)' : r.mult===2 ? ' (×2 doubled)' : '';
+    let scoreTxt;
+    if(G.boardMode==='single'){
+      const diff = r.scoreA - r.scoreB;
+      scoreTxt = diff===0 ? '0' : diff>0 ? `${seatLabel(0)} & ${seatLabel(2)} ❤️ ${diff}` : `${seatLabel(1)} & ${seatLabel(3)} ❤️ ${-diff}`;
+    } else {
+      scoreTxt = `A: ${r.scoreA} — B: ${r.scoreB}`;
+    }
+    d.innerHTML = `<b>Round ${r.n}:</b> ${r.bidder} (${bidTeamNames}) bid ${r.bid}, took ${r.took}${multTxt} — ${r.madeIt?'made':'failed'}`
+      + (r.singlesPlayer ? `<br>Singles: ${r.singlesPlayer}` : '')
+      + (r.sweepTeam ? `<br>🎉 Sweep by ${r.sweepTeam==='A'?seatLabel(0)+' & '+seatLabel(2):seatLabel(1)+' & '+seatLabel(3)}` : '')
+      + `<br>Score after: ${scoreTxt}`;
+    box.appendChild(d);
+  }
+}
+function renderAll(){
+  const steps = [renderScore, renderBoardStrip, renderTable, renderHand, renderLog, renderHistory, checkToast, checkPartnerReveal, checkCancelVotes, checkCancelRoundPrompt];
+  for(const fn of steps){
+    try { fn(); } catch(e){ console.error((fn.name||'render step')+' failed', e); }
+  }
+}
+let partnerRevealShownLocally = false;
+function checkPartnerReveal(){
+  if(!G || !G.round || MY_SEAT==null) return;
+  const rd = G.round;
+  if(rd.singles===MY_SEAT && rd.partnerRevealShown && !partnerRevealShownLocally){
+    partnerRevealShownLocally = true;
+    const partnerSeat = PARTNER[MY_SEAT];
+    const hand = (rd.hands[partnerSeat]||[]).slice().sort((a,b)=>{
+      if(a.s!==b.s) return SUITS.indexOf(a.s)-SUITS.indexOf(b.s);
+      return rankIdx(a.r)-rankIdx(b.r);
+    });
+    document.getElementById('ovTitle').textContent = "Your Partner's Hand";
+    document.getElementById('ovText').textContent = "A one-time look — this won't be shown again this round.";
+    const row = document.getElementById('ovBtns');
+    row.innerHTML = '';
+    const cardRow = document.createElement('div');
+    cardRow.style.cssText = 'display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin:8px 0;';
+    for(const c of hand) cardRow.appendChild(cardEl(c, 'trickcard'));
+    row.appendChild(cardRow);
+    const btn = document.createElement('button');
+    btn.className = 'btn primary';
+    btn.textContent = 'Close';
+    btn.style.marginTop = '8px';
+    btn.addEventListener('click', hideOverlay);
+    row.appendChild(btn);
+    document.getElementById('overlay').classList.remove('hidden');
+  }
 }
 
-function renderCancelBar(){
-  if(!['trump','bidding','playing'].includes(room.phase)) return '';
-  if(room.cancelRequest){
-    const votesCount=room.players.filter(p=>room.cancelRequest.votes[p.uid]).length;
-    const iVoted=room.cancelRequest.votes[myUid];
-    return `<div class="panel" style="border:1px solid var(--gold);">
-      <div class="sub" style="margin-bottom:8px;">Cancel-round requested \u2014 ${votesCount}/4 accepted.</div>
-      ${iVoted ? `<div class="sub" style="margin:0;">You accepted. Waiting for everyone else\u2026</div>` : `<div class="row"><button onclick="respondCancelRound(true)">Accept cancel</button><button class="secondary" onclick="respondCancelRound(false)">Decline</button></div>`}
-    </div>`;
-  }
-  return `<div class="center" style="margin-bottom:16px;"><button class="secondary" onclick="requestCancelRound()">Cancel this round</button></div>`;
+/* ---------------- OVERLAYS (host-gated where noted) ---------------- */
+function overlayBtnList(realBtns, requireHost){
+  if(!requireHost || IS_HOST) return realBtns;
+  return [{label:'Waiting for host…', cls:'ghost', fn:()=>{}}];
 }
+function showRedealOverlay(){
+  const rd = G.round;
+  const reasonText = rd.awaiting.reason==='jacks'
+    ? `${seatLabel(rd.awaiting.seat)} held all four Jacks.`
+    : rd.awaiting.reason==='notrumpshown'
+    ? `The trump suit was never shown during play.`
+    : rd.awaiting.reason==='redoubleSweep'
+    ? `One side swept all 8 tricks on a redoubled round — too extreme to score.`
+    : rd.awaiting.reason==='weakSecondOption'
+    ? `${seatLabel(rd.awaiting.seat)} only has one card of that suit across their whole 8-card hand — too little trump support (Show Trump rule).`
+    : rd.awaiting.reason==='firstBidderNoPoints'
+    ? `${seatLabel(rd.awaiting.seat)} (first to bid) was dealt four cards worth 0 points.`
+    : rd.awaiting.reason==='noPointsHand'
+    ? `${seatLabel(rd.awaiting.seat)}'s full 8-card hand is worth 0 points.`
+    : rd.awaiting.reason==='alltrump'
+    ? `${seatLabel(rd.awaiting.seat)}'s side holds all 8 trump cards — the opponents have none.`
+    : `${seatLabel(rd.awaiting.seat)}'s side had no trump cards at all.`;
+  showOverlay('Round Cancelled', reasonText+' Re-dealing with the next dealer.',
+    overlayBtnList([{label:'Continue', cls:'primary', fn:()=>{
+      hideOverlay(); G.dealer = nextSeat(G.dealer); hostStartRound();
+    }}], true));
+}
+function showRoundEndOverlay(){
+  const rd = G.round;
+  rd.readyNext = rd.readyNext || [];
+  if(IS_HOST && humanSeatsList().every(s=>rd.readyNext.includes(s))){
+    G.dealer = nextSeat(G.dealer);
+    hostStartRound();
+    return;
+  }
+  const myReady = rd.readyNext.includes(MY_SEAT);
+  const readyNames = rd.readyNext.map(s=>seatLabel(s)).join(', ') || 'nobody yet';
+  const btns = [];
+  if(!myReady){
+    btns.push({label:'Next Round', cls:'primary', fn:()=>{
+      rd.readyNext.push(MY_SEAT);
+      logMsg(`${pname(MY_SEAT)} is ready for the next round.`);
+      if(IS_HOST && humanSeatsList().every(s=>rd.readyNext.includes(s))){
+        // This is the final confirmation and I'm host — go straight to the
+        // new round instead of also pushing the now-stale old-round state,
+        // which could otherwise race against and clobber the new round.
+        G.dealer = nextSeat(G.dealer);
+        hostStartRound();
+      } else {
+        pushState();
+        showRoundEndOverlay();
+      }
+    }});
+  }
+  btns.push({label:'View Log', cls:'ghost', fn:()=>{ document.getElementById('logBox').classList.add('show'); }});
+  if(IS_HOST){
+    btns.push({label:'Force Next Round', cls:'ghost', fn:()=>{
+      if(confirm('Skip waiting and start the next round now?')){
+        G.dealer = nextSeat(G.dealer);
+        hostStartRound();
+      }
+    }});
+  }
+  const readyText = myReady ? `\n\nWaiting on everyone else... (ready: ${readyNames})` : `\n\nReady so far: ${readyNames}`;
+  showOverlay('Round Result', G.round.awaiting.overText+readyText, btns);
+}
+function showMatchEndOverlay(){
+  const winnerTeam = G.round.awaiting.winnerTeam;
+  const winnerNames = winnerTeam==='A' ? (seatLabel(0)+' & '+seatLabel(2)) : (seatLabel(1)+' & '+seatLabel(3));
+  showOverlay(G.boardMode==='single' ? `${winnerNames} — 6 Love!` : 'Match Won',
+    `${winnerNames} reached 6 points first and win the match.`,
+    overlayBtnList([{label:'Play Again', cls:'primary', fn:()=>{ hideOverlay(); replayMatch(); }}], true));
+}
+function replayMatch(){
+  G = { dealer:0, scoreA:0, scoreB:0, boardMode:G.boardMode, trumpMode:G.trumpMode, boxes:{A:{red:false,black:false},B:{red:false,black:false}}, matchOver:false, roundHistory:[] };
+  hostStartRound();
+}
+function cancelRound(){
+  logMsg('Round cancelled by host — re-dealing with the same dealer.');
+  hostStartRound();
+}
+
+/* ---------------- PANEL / OVERLAY HELPERS ---------------- */
+function setPanelMsg(t){ document.getElementById('panelMsg').textContent = t; }
+function setPanelBtns(list){
+  const row = document.getElementById('panelBtns');
+  row.innerHTML='';
+  for(const b of list){
+    const btn = document.createElement('button');
+    btn.className = 'btn '+(b.cls||'');
+    btn.textContent = b.label;
+    btn.addEventListener('click', b.fn);
+    row.appendChild(btn);
+  }
+}
+function hidePanelBtns(){ document.getElementById('panelBtns').innerHTML=''; }
+function setCenterActions(list){
+  const row = document.getElementById('centerActions');
+  row.innerHTML='';
+  for(const b of list){
+    const btn = document.createElement('button');
+    btn.className = 'btn '+(b.cls||'');
+    btn.textContent = b.label;
+    btn.addEventListener('click', b.fn);
+    row.appendChild(btn);
+  }
+}
+let lastToastId = null;
+function checkToast(){
+  if(!G || !G.round || !G.round.announcement) return;
+  const ann = G.round.announcement;
+  if(ann.id===lastToastId) return;
+  lastToastId = ann.id;
+  const el = document.getElementById('tableToast');
+  el.textContent = ann.text;
+  el.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>el.classList.remove('show'), 3000);
+}
+function announce(text){
+  G.round.announcement = {id: Date.now()+'-'+Math.random(), text};
+}
+function clearDecisionUI(){
+  setPanelBtns([]);
+  setCenterActions([]);
+  hideOverlay();
+  PLAYABLE_IDS = [];
+}
+function showOverlay(title, text, btns){
+  document.getElementById('ovTitle').textContent = title;
+  document.getElementById('ovText').textContent = text;
+  const row = document.getElementById('ovBtns');
+  row.innerHTML='';
+  for(const b of btns){
+    const btn = document.createElement('button');
+    btn.className='btn '+(b.cls||'');
+    btn.textContent=b.label;
+    btn.addEventListener('click', b.fn);
+    row.appendChild(btn);
+  }
+  document.getElementById('overlay').classList.remove('hidden');
+}
+function hideOverlay(){ document.getElementById('overlay').classList.add('hidden'); }
+
+document.getElementById('newGameBtn').addEventListener('click', ()=>{
+  if(!G || !G.round) return;
+  const rd = G.round;
+  rd.cancelVotes = rd.cancelVotes || [];
+  if(rd.cancelVotes.includes(MY_SEAT)){ alert('You already voted to cancel — waiting on the others.'); return; }
+  if(!confirm('Ask everyone to cancel this round and re-deal?')) return;
+  rd.cancelVotes.push(MY_SEAT);
+  logMsg(`${pname(MY_SEAT)} asked to cancel the round.`);
+  announce(`${pname(MY_SEAT)} wants to cancel the round (${rd.cancelVotes.length}/${humanSeatsList().length})`);
+  pushState();
+  checkCancelVotes();
+});
+function checkCancelVotes(){
+  if(!G || !G.round) return;
+  const rd = G.round;
+  if(IS_HOST && humanSeatsList().every(s=>(rd.cancelVotes||[]).includes(s))){
+    cancelRound();
+  }
+}
+let cancelPromptHandledFor = 0;
+function checkCancelRoundPrompt(){
+  if(!G || !G.round || MY_SEAT==null) return;
+  const rd = G.round;
+  const votes = rd.cancelVotes || [];
+  if(votes.length===0){ cancelPromptHandledFor = 0; return; }
+  if(votes.includes(MY_SEAT)) return;
+  if(cancelPromptHandledFor===votes.length) return;
+  cancelPromptHandledFor = votes.length;
+  const requesterNames = votes.map(s=>pname(s)).join(', ');
+  showOverlay('Cancel Round?', `${requesterNames} want${votes.length===1?'s':''} to cancel this round and re-deal. Do you agree?`, [
+    {label:'Agree', cls:'primary', fn:()=>{
+      hideOverlay();
+      rd.cancelVotes = rd.cancelVotes || [];
+      rd.cancelVotes.push(MY_SEAT);
+      logMsg(`${pname(MY_SEAT)} agreed to cancel the round.`);
+      pushState();
+      checkCancelVotes();
+    }},
+    {label:'Decline', cls:'ghost', fn:()=>{
+      hideOverlay();
+      logMsg(`${pname(MY_SEAT)} declined — cancel request withdrawn.`);
+      announce(`${pname(MY_SEAT)} declined the cancel request.`);
+      rd.cancelVotes = [];
+      pushState();
+    }}
+  ]);
+}
+document.getElementById('logToggle').addEventListener('click', ()=>{
+  document.getElementById('logBox').classList.toggle('show');
+});
+document.getElementById('logClose').addEventListener('click', ()=>{
+  document.getElementById('logBox').classList.remove('show');
+});
+document.getElementById('historyToggle').addEventListener('click', ()=>{
+  document.getElementById('historyBox').classList.toggle('show');
+});
+document.getElementById('historyClose').addEventListener('click', ()=>{
+  document.getElementById('historyBox').classList.remove('show');
+});
+
+/* ---------------- BOOT ---------------- */
+function setVH(){ document.documentElement.style.setProperty('--vh', (window.innerHeight*0.01)+'px'); }
+setVH();
+window.addEventListener('resize', setVH);
+window.addEventListener('orientationchange', ()=>setTimeout(setVH,150));
+
+auth.onAuthStateChanged(user=>{
+  if(!user){ auth.signInAnonymously().catch(e=>console.error(e)); return; }
+  myUid = user.uid;
+  const urlCode = new URLSearchParams(location.search).get('room');
+  if(urlCode){
+    pendingJoinCode = urlCode.toUpperCase();
+    nameFlowMode = 'join';
+    document.getElementById('nameScreenTitle').textContent = 'Join Room '+pendingJoinCode;
+    showScreen('screenName');
+  } else {
+    showScreen('screenHome');
+  }
+});
 </script>
 </body>
 </html>
