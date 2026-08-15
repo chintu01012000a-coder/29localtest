@@ -108,6 +108,8 @@ body{
   border-radius:7px; padding:5px 9px; font-size:11px; font-family:'Inter';
 }
 .menubtn.hiddenBtn{visibility:hidden;}
+.menubtn.active{background:var(--gold); color:var(--ink);}
+#connStatus{font-size:10px; opacity:0.7; margin-left:4px; white-space:nowrap;}
 
 /* ---- board / boxes for double board mode ---- */
 .boardstrip{display:flex; gap:6px; padding:6px 12px; background:rgba(0,0,0,0.12); border-bottom:1px solid var(--line);}
@@ -316,7 +318,12 @@ body{
       <div class="pod hidden" id="podUnified"><div class="lbl" id="unifiedLabel">Score</div><div class="val" id="unifiedScore">0</div></div>
     </div>
     <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
+      <div style="display:flex; gap:4px;">
+        <button class="menubtn" id="refreshBtn" title="Refresh game state">⟳ Refresh</button>
+        <span id="connStatus">Online</span>
+      </div>
       <button class="menubtn" id="newGameBtn">Cancel Round</button>
+      <button class="menubtn" id="autoPlayBtn">Auto: Off</button>
       <button class="menubtn" id="logToggle">Log</button>
       <button class="menubtn" id="historyToggle">History</button>
     </div>
@@ -337,7 +344,7 @@ body{
       </div>
 
       <div class="centerTrick" id="centerTrick">
-        <div class="trumpseed" id="trumpSeed">trump<br>hidden</div>
+        <div class="trumpseed hidden" id="trumpSeed">trump<br>hidden</div>
         <div class="centerActions" id="centerActions"></div>
         <div class="tableToast" id="tableToast"></div>
         <div class="trickslot" id="slotBottom"></div>
@@ -364,7 +371,10 @@ body{
   <div class="log" id="logBox">
     <div class="logHeader">
       <span>Log</span>
-      <button class="logClose" id="logClose">✕</button>
+      <div style="display:flex; gap:6px;">
+        <button class="logClose" id="logCopy" title="Copy log">📋</button>
+        <button class="logClose" id="logClose">✕</button>
+      </div>
     </div>
     <div id="logLines"></div>
   </div>
@@ -372,7 +382,10 @@ body{
   <div class="log" id="historyBox">
     <div class="logHeader">
       <span>Round History</span>
-      <button class="logClose" id="historyClose">✕</button>
+      <div style="display:flex; gap:6px;">
+        <button class="logClose" id="historyCopy" title="Copy history">📋</button>
+        <button class="logClose" id="historyClose">✕</button>
+      </div>
     </div>
     <div id="historyLines"></div>
   </div>
@@ -408,6 +421,8 @@ body{
      avoid two devices disagreeing about a random AI decision. If the host closes their
      tab mid-game, the game will stall — that's a known limitation for a future pass
      (your Call Break app's watchdog/heartbeat would be the model to copy).
+   - NEW: Auto-play toggle allows any human to hand control to the host bot. When ON,
+     the host treats that seat exactly like a computer player.
    ========================================================== */
 
 const firebaseConfig = {
@@ -461,6 +476,10 @@ let PLAYABLE_IDS = [];
 
 /* ---------------- SEAT / IDENTITY HELPERS ---------------- */
 function isComputerSeat(seat){ return ROOM && ROOM.seats[seat] && ROOM.seats[seat].type==='cpu'; }
+function shouldHostAuto(seat){
+  // host controls a seat if it's a computer OR a human with autoPlay ON
+  return IS_HOST && ROOM && ROOM.seats[seat] && (ROOM.seats[seat].type==='cpu' || ROOM.seats[seat].autoPlay);
+}
 function humanSeatsList(){
   if(!ROOM || !ROOM.seats) return MY_SEAT!=null ? [MY_SEAT] : [];
   return [0,1,2,3].filter(s=>!isComputerSeat(s));
@@ -477,7 +496,8 @@ function pname(seat){
   return ROOM.seats[seat].name || (ROOM.seats[seat].type==='cpu' ? 'Computer' : 'Player');
 }
 function authorizedFor(seat){
-  if(isComputerSeat(seat)) return IS_HOST;
+  // human player controls their own seat; host controls computers and auto-play seats
+  if(shouldHostAuto(seat)) return IS_HOST;
   return seat===MY_SEAT;
 }
 function slotOf(seat){
@@ -495,6 +515,25 @@ function pushState(){
     .set({ blob: JSON.stringify(G), updatedAt: Date.now() })
     .catch(e=>{ console.error('pushState error', e); alert('Could not sync game state: '+e.message); });
 }
+function manualRefresh(){
+  if(!ROOM_CODE) return;
+  setConnStatus('Refreshing…');
+  db.collection(ROOMS).doc(ROOM_CODE).collection('state').doc('current').get()
+    .then(doc=>{
+      if(!doc.exists) return;
+      const incoming = JSON.parse(doc.data().blob);
+      G = incoming;
+      lastStateChangeAt = Date.now();
+      try { renderAll(); } catch(e){ console.error('renderAll failed', e); }
+      try { resumeFlow(); } catch(e){ console.error('resumeFlow failed', e); }
+      setConnStatus('Online');
+    })
+    .catch(e=>{ console.error('manualRefresh failed', e); alert('Could not refresh: '+e.message); setConnStatus('Offline'); });
+  // also re-subscribe in case the live listener itself dropped
+  subscribeState();
+}
+let lastStateChangeAt = Date.now();
+let watchdogTimer = null;
 function subscribeState(){
   if(unsubState) unsubState();
   unsubState = db.collection(ROOMS).doc(ROOM_CODE).collection('state').doc('current')
@@ -505,9 +544,10 @@ function subscribeState(){
       if(G && typeof G.seq==='number' && typeof incoming.seq==='number' && incoming.seq < G.seq) return;
       G = incoming;
       lastStateChangeAt = Date.now();
+      setConnStatus('Online');
       try { renderAll(); } catch(e){ console.error('renderAll failed', e); }
       try { resumeFlow(); } catch(e){ console.error('resumeFlow failed', e); }
-    }, e=>{ console.error('subscribeState error', e); alert('Lost connection to the game: '+e.message); });
+    }, e=>{ console.error('subscribeState error', e); setConnStatus('Offline'); alert('Lost connection to the game: '+e.message); });
   if(!watchdogTimer){
     watchdogTimer = setInterval(()=>{
       if(!G || !G.round || !IS_HOST) return;
@@ -518,8 +558,6 @@ function subscribeState(){
     }, 3000);
   }
 }
-let lastStateChangeAt = Date.now();
-let watchdogTimer = null;
 function subscribeRoom(code){
   if(unsubRoom) unsubRoom();
   unsubRoom = db.collection(ROOMS).doc(code).onSnapshot(doc=>{
@@ -527,6 +565,7 @@ function subscribeRoom(code){
     ROOM = doc.data();
     MY_SEAT = ROOM.seats.findIndex(s=>s.uid===myUid);
     IS_HOST = (myUid===ROOM.hostUid);
+    updateAutoPlayButton();
     if(ROOM.status==='lobby' || ROOM.status==='seating'){
       renderLobbyScreen();
       showScreen('screenLobby');
@@ -589,9 +628,9 @@ function genCode(){
 function createRoom(hostName, numComputers){
   const code = genCode();
   const seats = new Array(4).fill(null);
-  for(let i=0;i<numComputers;i++) seats[3-i] = {type:'cpu', uid:null, name:'Computer '+(i+1)};
-  seats[0] = {type:'human', uid:myUid, name:hostName};
-  for(let i=1;i<4;i++) if(!seats[i]) seats[i] = {type:'human', uid:null, name:null};
+  for(let i=0;i<numComputers;i++) seats[3-i] = {type:'cpu', uid:null, name:'Computer '+(i+1), autoPlay:false};
+  seats[0] = {type:'human', uid:myUid, name:hostName, autoPlay:false};
+  for(let i=1;i<4;i++) if(!seats[i]) seats[i] = {type:'human', uid:null, name:null, autoPlay:false};
   const humansNeeded = seats.filter(s=>s.type==='human').length;
   const status = humansNeeded<=1 ? 'seating' : 'lobby';
   document.querySelectorAll('#screenHostSetup [data-cpu]').forEach(b=>b.disabled=true);
@@ -619,7 +658,7 @@ function joinRoom(code, name){
     if(already) return; // this device already has a seat — do nothing
     const idx = seats.findIndex(s=>s.type==='human' && s.uid===null);
     if(idx===-1) throw new Error('That room is already full.');
-    seats[idx] = {type:'human', uid:myUid, name};
+    seats[idx] = {type:'human', uid:myUid, name, autoPlay:false};
     const filled = seats.filter(s=>s.type==='human' && s.uid).length;
     const humansNeeded = seats.filter(s=>s.type==='human').length;
     const status = filled>=humansNeeded ? 'seating' : 'lobby';
@@ -838,14 +877,75 @@ function resumeFlow(){
   }
 }
 
-/* ---------------- BIDDING ----------------
-   Only TWO players bid against each other at any moment: 1st vs 2nd first.
-   Whoever passes is permanently out; the other (if they haven't also passed)
-   goes on to duel the next new player (3rd, then the dealer) — same process,
-   just a new opponent. If BOTH duelists pass without anyone ever bidding,
-   the next pair (skipping the two who dropped out) starts a fresh duel.
-   The two players not currently dueling can only watch. Dealer is forced to
-   bid (can't pass) only if it's their turn and nobody has bid at all yet. */
+/* ---------------- AI FUNCTIONS (used for computers and auto-play) ---------------- */
+function aiBid(seat){
+  const rd = G.round;
+  const hand = rd.hands[seat];
+  const {score} = handStrength(hand);
+  const isDealer = (seat===G.dealer);
+  const mustBid = isDealer && rd.highBid===0;
+  const minBid = rd.highBid===0 ? 16 : rd.highBid+1;
+  const comfortCap = Math.min(28, Math.round(16+score/3));
+  let action;
+  if(mustBid){ action = {bid: Math.max(16, Math.min(28, Math.max(minBid,comfortCap)))}; }
+  else if(minBid>28){ action = {pass:true}; }
+  else if(minBid<=comfortCap){ action = {bid: minBid}; }
+  else { action = {pass:true}; }
+  if(action.pass){ rd.passed.push(seat); logMsg(`${pname(seat)} passes.`); resolveDuelStep(seat, true); }
+  else { rd.highBid=action.bid; rd.highBidder=seat; logMsg(`${pname(seat)} bids ${action.bid}${mustBid?' (forced, nobody had bid yet)':''}.`); resolveDuelStep(seat, false); }
+}
+
+function aiTrump(seat){
+  const {suit} = handStrength(G.round.hands[seat]);
+  setTrump(suit);
+}
+
+function aiBidDouble(opp){
+  // returns true if opponent decides to double
+  return Math.random()<0.25;
+}
+function aiRedouble(sideSeat){
+  // returns true if side seat decides to redouble
+  return Math.random()<0.2;
+}
+function aiSingles(seat){
+  const {score} = handStrength(G.round.hands[seat]);
+  return score>16 && Math.random()<0.3;
+}
+
+function aiPlay(seat, legal){
+  const rd = G.round;
+  let choice;
+  let skipTrumpCheck = false;
+  if(rd.leadSuit && legalIsDiscardOnly(seat)){
+    const trumpsInHand = legal.filter(c=>c.s===rd.trump);
+    if(seat===rd.highBidder && trumpsInHand.length>0 && !rd.trumpRevealed){
+      // the bidder knows their own secret trump suit and can deliberately play it
+      choice = trumpsInHand[0];
+    } else if(rd.trumpRevealed && trumpsInHand.length>0 && Math.random()<0.6){
+      // trump is already known to everyone — anyone can now deliberately trump in
+      choice = trumpsInHand[0];
+    } else if(!rd.trumpRevealed && Math.random()<0.5){
+      // decides not to attempt trump this time — a safe discard regardless of suit
+      choice = legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
+      skipTrumpCheck = true;
+    } else if(!rd.trumpRevealed && G.trumpMode==='show'){
+      // Show Trump: attempting trump reveals it FIRST, then they choose informed
+      rd.trumpRevealed = true;
+      logMsg(`${pname(seat)} chose to Trump — trump revealed: ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}.`);
+      announce(`Trump revealed: ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}`);
+      choice = trumpsInHand.length>0 ? trumpsInHand[0] : legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
+    } else {
+      // Hidden Trump: attempts trump by choosing a card, not knowing whether it matches
+      choice = legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
+    }
+  } else {
+    choice = legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
+  }
+  playCard(seat, choice, {skipTrumpCheck});
+}
+
+/* ---------------- BIDDING ---------------- */
 function startBidding(){
   const rd = G.round;
   rd.duelSeats = [rd.order4[0], rd.order4[1]];
@@ -857,6 +957,13 @@ function startBidding(){
 function bidTurn(seat){
   const rd = G.round;
   rd.awaiting = {type:'bid', seat};
+  if(shouldHostAuto(seat)){
+    setTimeout(()=>{
+      if(!G || !G.round || G.round.awaiting.type!=='bid' || G.round.awaiting.seat!==seat) return;
+      aiBid(seat);
+    }, 550);
+    return;
+  }
   if(!authorizedFor(seat)){
     clearDecisionUI();
     setPanelMsg(`Waiting for ${seatLabel(seat)} to bid...`);
@@ -865,35 +972,19 @@ function bidTurn(seat){
   if(seat===MY_SEAT){ presentHumanBid(); return; }
   setTimeout(()=>{
     if(!G || !G.round || G.round.awaiting.type!=='bid' || G.round.awaiting.seat!==seat) return;
-    const rd = G.round; // re-read live state — G may have been replaced by a snapshot since we were scheduled
-    const hand = rd.hands[seat];
-    const {score} = handStrength(hand);
-    const isDealer = (seat===G.dealer);
-    const mustBid = isDealer && rd.highBid===0; // dealer can't pass if nobody has bid at all
-    const minBid = rd.highBid===0 ? 16 : rd.highBid+1;
-    const comfortCap = Math.min(28, Math.round(16+score/3));
-    let action;
-    if(mustBid){ action = {bid: Math.max(16, Math.min(28, Math.max(minBid,comfortCap)))}; }
-    else if(minBid>28){ action = {pass:true}; }
-    else if(minBid<=comfortCap){ action = {bid: minBid}; }
-    else { action = {pass:true}; }
-    if(action.pass){ rd.passed.push(seat); logMsg(`${pname(seat)} passes.`); resolveDuelStep(seat, true); }
-    else { rd.highBid=action.bid; rd.highBidder=seat; logMsg(`${pname(seat)} bids ${action.bid}${mustBid?' (forced, nobody had bid yet)':''}.`); resolveDuelStep(seat, false); }
-    pushState();
+    aiBid(seat); // for computer or any host-controlled seat (shouldHostAuto already handled above)
   }, 550);
 }
 function resolveDuelStep(actingSeat, didPass){
   const rd = G.round;
   const other = rd.duelSeats.find(s=>s!==actingSeat);
   if(!didPass){
-    // switch to the other seat in the current duel — they must raise or pass
     rd.awaiting = {type:'bid', seat: other};
     bidTurn(other);
     return;
   }
   const otherPassed = rd.passed.includes(other);
   if(otherPassed){
-    // both duelists passed — no survivor. Bring in the next pair from the queue.
     if(rd.pendingQueue.length>=2){
       const nextA = rd.pendingQueue.shift();
       const nextB = rd.pendingQueue.shift();
@@ -904,15 +995,14 @@ function resolveDuelStep(actingSeat, didPass){
       const last = rd.pendingQueue.shift();
       rd.duelSeats = [last, last];
       rd.awaiting = {type:'bid', seat: last};
-      bidTurn(last); // this must be the dealer — the forced-bid rule guarantees a winner
+      bidTurn(last);
     } else {
-      finishBidding(); // shouldn't happen given the dealer-forced rule, but safe fallback
+      finishBidding();
     }
     return;
   }
-  // the other seat survives (hasn't passed) — bring in ONE new challenger if any remain
   if(rd.pendingQueue.length===0){
-    finishBidding(); // no more challengers — survivor wins
+    finishBidding();
     return;
   }
   const challenger = rd.pendingQueue.shift();
@@ -973,14 +1063,20 @@ function finishBidding(){
 
 /* ---------------- TRUMP ---------------- */
 function doTrumpStep(seat){
+  if(shouldHostAuto(seat)){
+    setTimeout(()=>{
+      if(!G || !G.round || G.round.awaiting.type!=='trump' || G.round.awaiting.seat!==seat) return;
+      aiTrump(seat);
+    }, 600);
+    return;
+  }
   if(!authorizedFor(seat)){
     clearDecisionUI();
     setPanelMsg(`Waiting for ${seatLabel(seat)} to choose trump...`);
     return;
   }
   if(seat===MY_SEAT){ presentTrumpChoice(); return; }
-  const {suit} = handStrength(G.round.hands[seat]);
-  setTrump(suit);
+  // For any other human (non-host) we wait; host already handled above.
 }
 function presentTrumpChoice(){
   setPanelMsg('Choosing trump...');
@@ -1001,17 +1097,31 @@ function startSecondOption(){
   doSecondOptionStep(MY_SEAT);
 }
 function doSecondOptionStep(seat){
+  if(shouldHostAuto(seat)){
+    // For auto-play, we just pick the first card's suit as trump (simple AI)
+    setTimeout(()=>{
+      if(!G || !G.round || G.round.awaiting.type!=='trumpSecondPick' || G.round.awaiting.seat!==seat) return;
+      const rd = G.round;
+      const cards = rd.pendingSecondOption;
+      if(!cards) return;
+      // AI: pick suit that matches their strongest existing hand
+      const {suit} = handStrength(rd.hands[seat].concat(cards));
+      const idx = cards.findIndex(c=>c.s===suit) >=0 ? cards.findIndex(c=>c.s===suit) : 0;
+      finishSecondOption(idx);
+    }, 600);
+    return;
+  }
   if(!authorizedFor(seat)){
     clearDecisionUI();
     setPanelMsg(`Waiting for ${seatLabel(seat)} to pick a face-down card...`);
     return;
   }
-  if(seat!==MY_SEAT) return; // "2nd" is human-only; nothing for the host to drive here
+  if(seat!==MY_SEAT) return;
   presentSecondOptionPicker();
 }
 function presentSecondOptionPicker(){
   const cards = G.round.pendingSecondOption;
-  if(!cards){ return; } // already resolved (e.g. a duplicate dispatch) — nothing to show
+  if(!cards){ return; }
   setPanelMsg('Pick one face-down card to secretly set your trump suit.');
   document.getElementById('ovTitle').textContent = 'Choose a Face-Down Card';
   document.getElementById('ovText').textContent = 'Tap one — it will secretly become your trump suit.';
@@ -1030,7 +1140,7 @@ function presentSecondOptionPicker(){
   document.getElementById('overlay').classList.remove('hidden');
 }
 function finishSecondOption(idx){
-  const rd = G.round; // fresh — do not rely on any closured reference from earlier
+  const rd = G.round;
   const cards = rd.pendingSecondOption;
   const chosen = cards[idx];
   const trumpCountTotal = rd.hands[MY_SEAT].filter(c=>c.s===chosen.s).length + cards.filter(c=>c.s===chosen.s).length;
@@ -1046,8 +1156,7 @@ function finishSecondOption(idx){
   rd.trump = chosen.s;
   rd.trumpRevealed = false;
   rd.secondOptionSeat = MY_SEAT;
-  rd.secondOptionCards = cards; // held back — only added to your hand at the same
-                                 // moment everyone else gets their next 4 cards
+  rd.secondOptionCards = cards;
   rd.pendingSecondOption = null;
   logMsg(`${pname(MY_SEAT)} secretly set trump via the "2nd" option.`);
   document.getElementById('ovTitle').textContent = 'Your Trump Card';
@@ -1073,13 +1182,7 @@ function setTrump(suit){
   startBidDoubleOffers();
 }
 
-/* ---------------- BID DOUBLE / REDOUBLE ----------------
-   Happens right after trump is chosen, before the remaining 4 cards are dealt.
-   BOTH opponents see the Double popup at the same time — whichever accepts
-   first wins it; only if both skip does it stay normal.
-   If doubled, BOTH the bidder and partner see the Redouble popup at the same
-   time — whichever accepts first wins it; if both skip, it stays doubled
-   (does not fall back to normal). Opponents never see the redouble popup. */
+/* ---------------- BID DOUBLE / REDOUBLE ---------------- */
 function startBidDoubleOffers(){
   const rd = G.round;
   rd.bidMultiplier = 1;
@@ -1093,6 +1196,30 @@ function doBidDoubleOfferStep(){
   if(!rd.awaiting || rd.awaiting.type!=='bidDoubleOffer') return;
   const opponents = rd.awaiting.opponents;
   const skipped = rd.bidDoubleSkipped||[];
+  // Host handles AI/auto opponents
+  if(IS_HOST){
+    let anyActionTaken = false;
+    for(const opp of opponents){
+      if(shouldHostAuto(opp) && !skipped.includes(opp)){
+        anyActionTaken = true;
+        setTimeout(()=>{
+          if(!G || !G.round || G.round.awaiting.type!=='bidDoubleOffer') return;
+          const rd2 = G.round;
+          if((rd2.bidDoubleSkipped||[]).includes(opp)) return;
+          if(aiBidDouble(opp)){
+            rd2.bidMultiplier=2; rd2.bidDoubleBy=opp; logMsg(`${pname(opp)} doubles the bid!`);
+            announce(`${seatLabel(opp)} doubles the bid!`);
+            startRedoubleOffers();
+          } else {
+            rd2.bidDoubleSkipped = rd2.bidDoubleSkipped||[]; rd2.bidDoubleSkipped.push(opp);
+            checkBidDoubleResolution();
+          }
+        }, 600+Math.random()*400);
+      }
+    }
+    if(!anyActionTaken) return; // waiting for human opponents
+  }
+  // Human opponents: show prompt if it's my seat and not skipped
   if(opponents.includes(MY_SEAT) && !skipped.includes(MY_SEAT)){
     setPanelMsg('Double decision...');
     setPanelBtns([]);
@@ -1110,26 +1237,6 @@ function doBidDoubleOfferStep(){
     ]);
     return;
   }
-  if(IS_HOST){
-    for(const opp of opponents){
-      if(isComputerSeat(opp) && !skipped.includes(opp)){
-        setTimeout(()=>{
-          if(!G || !G.round || G.round.awaiting.type!=='bidDoubleOffer') return;
-          const rd2 = G.round;
-          if((rd2.bidDoubleSkipped||[]).includes(opp)) return;
-          if(Math.random()<0.25){
-            rd2.bidMultiplier=2; rd2.bidDoubleBy=opp; logMsg(`${pname(opp)} doubles the bid!`);
-            announce(`${seatLabel(opp)} doubles the bid!`);
-            startRedoubleOffers();
-          } else {
-            rd2.bidDoubleSkipped = rd2.bidDoubleSkipped||[]; rd2.bidDoubleSkipped.push(opp);
-            checkBidDoubleResolution();
-          }
-        }, 600+Math.random()*400);
-        return;
-      }
-    }
-  }
   if(!opponents.includes(MY_SEAT)){
     clearDecisionUI();
     setPanelMsg("Waiting for opponents' Double decision...");
@@ -1140,7 +1247,7 @@ function checkBidDoubleResolution(){
   const opponents = rd.awaiting.opponents;
   const skipped = rd.bidDoubleSkipped||[];
   if(opponents.every(o=>skipped.includes(o))){
-    dealRemaining(); // both skipped — stays normal
+    dealRemaining();
   } else {
     pushState();
     doBidDoubleOfferStep();
@@ -1158,6 +1265,28 @@ function doRedoubleOfferStep(){
   if(!rd.awaiting || rd.awaiting.type!=='redoubleOffer') return;
   const side = rd.awaiting.biddingSide;
   const skipped = rd.redoubleSkipped||[];
+  if(IS_HOST){
+    let anyActionTaken = false;
+    for(const s of side){
+      if(shouldHostAuto(s) && !skipped.includes(s)){
+        anyActionTaken = true;
+        setTimeout(()=>{
+          if(!G || !G.round || G.round.awaiting.type!=='redoubleOffer') return;
+          const rd2 = G.round;
+          if((rd2.redoubleSkipped||[]).includes(s)) return;
+          if(aiRedouble(s)){
+            rd2.bidMultiplier=4; rd2.redoubleBy=s; logMsg(`${pname(s)} redoubles!`);
+            announce(`${seatLabel(s)} redoubles! Bid now worth 4 points.`);
+            dealRemaining();
+          } else {
+            rd2.redoubleSkipped = rd2.redoubleSkipped||[]; rd2.redoubleSkipped.push(s);
+            checkRedoubleResolution();
+          }
+        }, 600+Math.random()*400);
+      }
+    }
+    if(!anyActionTaken) return;
+  }
   if(side.includes(MY_SEAT) && !skipped.includes(MY_SEAT)){
     setPanelMsg('Redouble decision...');
     setPanelBtns([]);
@@ -1175,26 +1304,6 @@ function doRedoubleOfferStep(){
     ]);
     return;
   }
-  if(IS_HOST){
-    for(const s of side){
-      if(isComputerSeat(s) && !skipped.includes(s)){
-        setTimeout(()=>{
-          if(!G || !G.round || G.round.awaiting.type!=='redoubleOffer') return;
-          const rd2 = G.round;
-          if((rd2.redoubleSkipped||[]).includes(s)) return;
-          if(Math.random()<0.2){
-            rd2.bidMultiplier=4; rd2.redoubleBy=s; logMsg(`${pname(s)} redoubles!`);
-            announce(`${seatLabel(s)} redoubles! Bid now worth 4 points.`);
-            dealRemaining();
-          } else {
-            rd2.redoubleSkipped = rd2.redoubleSkipped||[]; rd2.redoubleSkipped.push(s);
-            checkRedoubleResolution();
-          }
-        }, 600+Math.random()*400);
-        return;
-      }
-    }
-  }
   if(!side.includes(MY_SEAT)){
     clearDecisionUI();
     setPanelMsg("Waiting for your team's Redouble decision...");
@@ -1205,7 +1314,7 @@ function checkRedoubleResolution(){
   const side = rd.awaiting.biddingSide;
   const skipped = rd.redoubleSkipped||[];
   if(side.every(s=>skipped.includes(s))){
-    dealRemaining(); // both skipped — stays doubled (bidMultiplier remains 2)
+    dealRemaining();
   } else {
     pushState();
     doRedoubleOfferStep();
@@ -1251,7 +1360,7 @@ function dealRemaining(){
     return;
   }
   for(const seat of [0,1,2,3]){
-    if(seat===rd.first) continue; // this rule doesn't apply to the first bidder
+    if(seat===rd.first) continue;
     const pts = rd.hands[seat].reduce((sum,c)=>sum+RANK_POINTS[c.r],0);
     if(pts===0){
       logMsg(`${pname(seat)}'s full 8-card hand is worth 0 points — round cancelled.`);
@@ -1274,13 +1383,34 @@ function dealRemaining(){
 }
 
 /* ---------------- SINGLES / DOUBLE ---------------- */
-// Singles is NOT restricted to the bidder — any of the four players may offer
-// to play it. ALL FOUR see the popup at the same time; whoever accepts FIRST
-// gets it, and it's cancelled only once all four have declined.
 function doSinglesOfferStep(){
   const rd = G.round;
   if(!rd.awaiting || rd.awaiting.type!=='singlesOffer') return;
   const skipped = rd.singlesSkipped||[];
+  if(IS_HOST){
+    let anyActionTaken = false;
+    for(const s of [0,1,2,3]){
+      if(shouldHostAuto(s) && !skipped.includes(s)){
+        anyActionTaken = true;
+        setTimeout(()=>{
+          if(!G || !G.round || G.round.awaiting.type!=='singlesOffer') return;
+          const rd2 = G.round;
+          if((rd2.singlesSkipped||[]).includes(s)) return;
+          if(aiSingles(s)){
+            rd2.singles = s;
+            logMsg(`${pname(s)} goes Singles!`);
+            announce(`${seatLabel(s)} chose to play Singles!`);
+            afterSinglesDecided();
+          } else {
+            rd2.singlesSkipped = rd2.singlesSkipped||[]; rd2.singlesSkipped.push(s);
+            announce(`${seatLabel(s)} chose No Single.`);
+            checkSinglesResolution();
+          }
+        }, 600+Math.random()*400);
+      }
+    }
+    if(!anyActionTaken) return;
+  }
   if(!skipped.includes(MY_SEAT)){
     setPanelMsg('Singles decision...');
     setPanelBtns([]);
@@ -1297,29 +1427,6 @@ function doSinglesOfferStep(){
     ]);
     return;
   }
-  if(IS_HOST){
-    for(const s of [0,1,2,3]){
-      if(isComputerSeat(s) && !skipped.includes(s)){
-        setTimeout(()=>{
-          if(!G || !G.round || G.round.awaiting.type!=='singlesOffer') return;
-          const rd2 = G.round;
-          if((rd2.singlesSkipped||[]).includes(s)) return;
-          const {score} = handStrength(rd2.hands[s]);
-          if(score>16 && Math.random()<0.3){
-            rd2.singles = s;
-            logMsg(`${pname(s)} goes Singles!`);
-            announce(`${seatLabel(s)} chose to play Singles!`);
-            afterSinglesDecided();
-          } else {
-            rd2.singlesSkipped = rd2.singlesSkipped||[]; rd2.singlesSkipped.push(s);
-            announce(`${seatLabel(s)} chose No Single.`);
-            checkSinglesResolution();
-          }
-        }, 600+Math.random()*400);
-        return;
-      }
-    }
-  }
   if(skipped.includes(MY_SEAT)){
     clearDecisionUI();
     setPanelMsg("Waiting for the others' Singles decision...");
@@ -1328,7 +1435,7 @@ function doSinglesOfferStep(){
 function checkSinglesResolution(){
   const rd = G.round;
   if((rd.singlesSkipped||[]).length>=4){
-    afterSinglesDecided(); // all four declined — normal play this round
+    afterSinglesDecided();
   } else {
     pushState();
     doSinglesOfferStep();
@@ -1343,6 +1450,15 @@ function afterSinglesDecided(){
   doDoubleStep(opponentSeat);
 }
 function doDoubleStep(seat){
+  if(shouldHostAuto(seat)){
+    setTimeout(()=>{
+      if(!G || !G.round || G.round.awaiting.type!=='double' || G.round.awaiting.seat!==seat) return;
+      const rd = G.round;
+      if(Math.random()<0.35){ rd.doubled=true; logMsg(`${pname(seat)} doubles the Singles bet.`); }
+      beginPlay();
+    }, 600);
+    return;
+  }
   if(!authorizedFor(seat)){
     clearDecisionUI();
     setPanelMsg(`Waiting for ${seatLabel(seat)}'s Double decision...`);
@@ -1358,8 +1474,7 @@ function doDoubleStep(seat){
     ]);
     return;
   }
-  if(Math.random()<0.35){ rd.doubled=true; logMsg(`${pname(seat)} doubles the Singles bet.`); }
-  beginPlay();
+  // Should not reach for human non-authorised; host handles auto
 }
 
 /* ---------------- PLAY ---------------- */
@@ -1367,8 +1482,6 @@ function beginPlay(){
   const rd = G.round;
   rd.phase='play';
   if(rd.singles!=null){
-    // Singles has its own trump rule: whatever suit gets led in the very first
-    // trick becomes THIS round's trump, replacing the bid's original trump.
     rd.leader = rd.singles;
     rd.originalTrump = rd.trump;
     rd.trump = null;
@@ -1401,8 +1514,6 @@ function legalCards(seat){
   if(followers.length>0) return followers;
   const bestTrumpRank = currentBestTrumpRank(rd);
   if(bestTrumpRank!=null){
-    // someone already trumped in this trick — small trump cards can't be
-    // played under it; only a bigger trump or a non-trump discard is legal
     const overOrSafe = hand.filter(c=> c.s!==rd.trump || rankIdx(c.r)>bestTrumpRank);
     if(overOrSafe.length>0) return overOrSafe;
   }
@@ -1413,35 +1524,13 @@ function seatOutOfPlay(seat){
   if(rd.singles==null) return false;
   return seat===PARTNER[rd.singles];
 }
-function playTurn(seat){
-  const rd = G.round;
-  if(seatOutOfPlay(seat)){ playTurn(nextSeat(seat)); return; }
-  rd.awaiting = {type:'play', seat};
-  const legal = legalCards(seat);
-  if(legal.length===1){
-    if(!authorizedFor(seat)) return;
-    playCard(seat, legal[0]);
-    return;
-  }
-  if(!authorizedFor(seat)){
-    clearDecisionUI();
-    setPanelMsg(`Waiting for ${seatLabel(seat)}...`);
-    setPlayable([]);
-    return;
-  }
-  if(seat===MY_SEAT){ presentHumanPlay(legal); }
-  else { setTimeout(()=>{
-    if(!G || !G.round || G.round.awaiting.type!=='play' || G.round.awaiting.seat!==seat) return;
-    computerPlay(seat, legalCards(seat));
-  }, 700); }
-}
 function legalIsDiscardOnly(seat){
   const rd = G.round;
   const hand = rd.hands[seat];
   if(!rd.leadSuit) return false;
   return !hand.some(c=>c.s===rd.leadSuit);
 }
-let TRUMP_ATTEMPT_MODE = false; // true = this next card tap is a deliberate trump attempt
+let TRUMP_ATTEMPT_MODE = false;
 function presentHumanPlay(legal){
   const rd = G.round;
   if(rd.forcedTrumpFor===MY_SEAT){
@@ -1521,36 +1610,35 @@ function presentHumanPlay(legal){
   }
   setCenterActions(btns);
 }
-function computerPlay(seat, legal){
+function playTurn(seat){
   const rd = G.round;
-  let choice;
-  let skipTrumpCheck = false;
-  if(rd.leadSuit && legalIsDiscardOnly(seat)){
-    const trumpsInHand = legal.filter(c=>c.s===rd.trump);
-    if(seat===rd.highBidder && trumpsInHand.length>0 && !rd.trumpRevealed){
-      // the bidder knows their own secret trump suit and can deliberately play it
-      choice = trumpsInHand[0];
-    } else if(rd.trumpRevealed && trumpsInHand.length>0 && Math.random()<0.6){
-      // trump is already known to everyone — anyone can now deliberately trump in
-      choice = trumpsInHand[0];
-    } else if(!rd.trumpRevealed && Math.random()<0.5){
-      // decides not to attempt trump this time — a safe discard regardless of suit
-      choice = legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
-      skipTrumpCheck = true;
-    } else if(!rd.trumpRevealed && G.trumpMode==='show'){
-      // Show Trump: attempting trump reveals it FIRST, then they choose informed
-      rd.trumpRevealed = true;
-      logMsg(`${pname(seat)} chose to Trump — trump revealed: ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}.`);
-      announce(`Trump revealed: ${SUIT_SYM[rd.trump]} ${SUIT_NAME[rd.trump]}`);
-      choice = trumpsInHand.length>0 ? trumpsInHand[0] : legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
-    } else {
-      // Hidden Trump: attempts trump by choosing a card, not knowing whether it matches
-      choice = legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
-    }
-  } else {
-    choice = legal.slice().sort((a,b)=>rankIdx(a.r)-rankIdx(b.r))[0];
+  if(seatOutOfPlay(seat)){ playTurn(nextSeat(seat)); return; }
+  rd.awaiting = {type:'play', seat};
+  const legal = legalCards(seat);
+  if(legal.length===1){
+    if(!authorizedFor(seat)) return;
+    playCard(seat, legal[0]);
+    return;
   }
-  playCard(seat, choice, {skipTrumpCheck});
+  if(shouldHostAuto(seat)){
+    setTimeout(()=>{
+      if(!G || !G.round || G.round.awaiting.type!=='play' || G.round.awaiting.seat!==seat) return;
+      aiPlay(seat, legalCards(seat));
+    }, 700);
+    return;
+  }
+  if(!authorizedFor(seat)){
+    clearDecisionUI();
+    setPanelMsg(`Waiting for ${seatLabel(seat)}...`);
+    setPlayable([]);
+    return;
+  }
+  if(seat===MY_SEAT){ presentHumanPlay(legal); }
+  else { setTimeout(()=>{
+    if(!G || !G.round || G.round.awaiting.type!=='play' || G.round.awaiting.seat!==seat) return;
+    // This should not happen for human non-host; but if host, shouldHostAuto already handled
+    if(IS_HOST) aiPlay(seat, legalCards(seat));
+  }, 700); }
 }
 function playCard(seat, card, opts){
   opts = opts || {};
@@ -1566,8 +1654,6 @@ function playCard(seat, card, opts){
   if(!rd.leadSuit) rd.leadSuit = card.s;
   logMsg(`${pname(seat)} plays ${card.r}${SUIT_SYM[card.s]}.`);
 
-  // Singles round: the suit led in the very first trick becomes this round's
-  // trump (openly, not secret), replacing whatever the bid's trump was.
   if(rd.singles!=null && !hadLeadSuit && rd.trump===null){
     rd.trump = card.s;
     rd.trumpRevealed = true;
@@ -1578,8 +1664,6 @@ function playCard(seat, card, opts){
     if(!anyOppHasSuit){
       logMsg('Neither opponent holds the Single Trump colour — Singles is automatically cancelled. Reverting to normal play.');
       announce('Singles cancelled — neither opponent holds that suit!');
-      // Undo the leading card entirely — the whole trick restarts fresh
-      // under normal rules, led by the normal (non-Singles) leader.
       rd.hands[seat].push(card);
       delete rd.current[seat];
       rd.playOrder = [];
@@ -1596,10 +1680,6 @@ function playCard(seat, card, opts){
     }
   }
   const wasAttempt = !skipTrumpCheck;
-  // Attempting trump reveals the suit to everyone regardless of whether this
-  // specific card matches it — only whether THIS card wins as trump depends
-  // on the match (handled separately by beats()). Not relevant once Singles
-  // has already locked in (and revealed) the trump above.
   if(rd.singles==null && hadLeadSuit && card.s!==hadLeadSuit && !rd.trumpRevealed && wasAttempt){
     rd.trumpRevealed = true;
     if(card.s===rd.trump){
@@ -1679,7 +1759,7 @@ function applyGamePoints(team, pts){
   if(pts<0){
     const newVal = current + pts;
     if(newVal<0){
-      const overflow = -newVal; // the part that would have gone below zero
+      const overflow = -newVal;
       if(team==='A'){ G.scoreA = 0; G.scoreB += overflow; }
       else { G.scoreB = 0; G.scoreA += overflow; }
       const teamNames = team==='A' ? (seatLabel(0)+' & '+seatLabel(2)) : (seatLabel(1)+' & '+seatLabel(3));
@@ -1705,8 +1785,6 @@ function endRound(){
   const countB = rd.tricks.filter(t=>TEAM[t.winner]==='B').length;
   const sweepTeam = countA===8 ? 'A' : countB===8 ? 'B' : null;
 
-  // Redouble rounds are all-or-nothing: a clean 8-0 sweep by either side is
-  // too extreme to score at ×4, so the round is voided instead.
   if(rd.singles==null && rd.bidMultiplier===4 && sweepTeam){
     logMsg(`${sweepTeam==='A'?pname(0)+' & '+pname(2):pname(1)+' & '+pname(3)} swept all 8 tricks on a redoubled round — too extreme, round cancelled.`);
     rd.awaiting = {type:'redealAck', reason:'redoubleSweep', seat:rd.highBidder};
@@ -1730,10 +1808,6 @@ function endRound(){
   }
 
   if(rd.singles!=null){
-    // Singles ignores the bid entirely — the ONLY thing that matters is
-    // whether the Singles player took every trick. Success scores for their
-    // side; failure scores for the OPPONENT side outright (not a penalty to
-    // the Singles side that might get floored at zero).
     const wonAll = rd.tricks.every(t=>t.winner===rd.singles);
     let pts = wonAll ? 3 : -3;
     if(rd.doubled) pts *= 2;
@@ -1760,8 +1834,6 @@ function endRound(){
 
   let gamePts = (madeIt ? 1 : -1) * (rd.bidMultiplier||1);
 
-  // Sweep bonus: only for normal/double rounds (not redoubled) — whichever
-  // side wins all 8 tricks gets +1 extra, on top of the usual swing.
   let sweepNote = '';
   if(rd.bidMultiplier!==4 && sweepTeam){
     applyGamePoints(sweepTeam, 1);
@@ -1883,8 +1955,9 @@ function renderTable(){
       document.getElementById('seat'+slot).querySelector('.name').innerHTML =
         escapeHtml(seatLabel(seat)) + seatStatusSuffix(seat, rd);
     });
+    // Fix: use MY_SEAT for bottom seat status
     document.getElementById('seatBottom').querySelector('.name').innerHTML =
-      'You' + seatStatusSuffix(0, rd);
+      'You' + seatStatusSuffix(MY_SEAT, rd);
   } catch(e){ console.error('seat label render failed', e); }
 
   try {
@@ -2050,9 +2123,6 @@ function showRoundEndOverlay(){
       rd.readyNext.push(MY_SEAT);
       logMsg(`${pname(MY_SEAT)} is ready for the next round.`);
       if(IS_HOST && humanSeatsList().every(s=>rd.readyNext.includes(s))){
-        // This is the final confirmation and I'm host — go straight to the
-        // new round instead of also pushing the now-stale old-round state,
-        // which could otherwise race against and clobber the new round.
         G.dealer = nextSeat(G.dealer);
         hostStartRound();
       } else {
@@ -2102,7 +2172,6 @@ function setPanelBtns(list){
     row.appendChild(btn);
   }
 }
-function hidePanelBtns(){ document.getElementById('panelBtns').innerHTML=''; }
 function setCenterActions(list){
   const row = document.getElementById('centerActions');
   row.innerHTML='';
@@ -2151,6 +2220,80 @@ function showOverlay(title, text, btns){
 }
 function hideOverlay(){ document.getElementById('overlay').classList.add('hidden'); }
 
+/* ---------------- CONNECTION STATUS & REFRESH ---------------- */
+function setConnStatus(msg){
+  const el = document.getElementById('connStatus');
+  if(el) el.textContent = msg;
+}
+document.getElementById('refreshBtn').addEventListener('click', ()=>{
+  manualRefresh();
+  setConnStatus('Refreshing…');
+});
+
+/* ---------------- AUTO-PLAY TOGGLE ---------------- */
+function toggleAutoPlay(){
+  if(!ROOM || MY_SEAT==null) return;
+  const seats = ROOM.seats.slice();
+  seats[MY_SEAT].autoPlay = !seats[MY_SEAT].autoPlay;
+  db.collection(ROOMS).doc(ROOM_CODE).update({ seats }).then(()=>{
+    updateAutoPlayButton();
+  }).catch(e=>{
+    console.error('autoPlay update failed', e);
+    alert('Could not update auto-play: '+e.message);
+  });
+}
+function updateAutoPlayButton(){
+  const btn = document.getElementById('autoPlayBtn');
+  if(!btn) return;
+  if(!ROOM || MY_SEAT==null){
+    btn.style.display = 'none';
+    return;
+  }
+  btn.style.display = 'inline-block';
+  const on = ROOM.seats[MY_SEAT]?.autoPlay;
+  btn.textContent = on ? 'Auto: On' : 'Auto: Off';
+  btn.classList.toggle('active', !!on);
+}
+document.getElementById('autoPlayBtn').addEventListener('click', toggleAutoPlay);
+
+/* ---------------- COPY LOG / HISTORY ---------------- */
+function copyToClipboard(text, successMsg){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>{
+      alert(successMsg || 'Copied!');
+    }).catch(()=>{
+      prompt('Copy this text:', text);
+    });
+  } else {
+    prompt('Copy this text:', text);
+  }
+}
+document.getElementById('logCopy').addEventListener('click', ()=>{
+  if(!G || !G.round || !G.round.log) return;
+  copyToClipboard(G.round.log.join('\n'), 'Log copied to clipboard!');
+});
+document.getElementById('historyCopy').addEventListener('click', ()=>{
+  if(!G || !G.roundHistory) return;
+  let text = '';
+  for(const r of G.roundHistory.slice().reverse()){
+    const bidTeamNames = r.bidTeam==='A' ? (seatLabel(0)+' & '+seatLabel(2)) : (seatLabel(1)+' & '+seatLabel(3));
+    const multTxt = r.mult===4 ? ' (×4 redoubled)' : r.mult===2 ? ' (×2 doubled)' : '';
+    let scoreTxt;
+    if(G.boardMode==='single'){
+      const diff = r.scoreA - r.scoreB;
+      scoreTxt = diff===0 ? '0' : diff>0 ? `${seatLabel(0)} & ${seatLabel(2)} ❤️ ${diff}` : `${seatLabel(1)} & ${seatLabel(3)} ❤️ ${-diff}`;
+    } else {
+      scoreTxt = `A: ${r.scoreA} — B: ${r.scoreB}`;
+    }
+    text += `Round ${r.n}: ${r.bidder} (${bidTeamNames}) bid ${r.bid}, took ${r.took}${multTxt} — ${r.madeIt?'made':'failed'}\n`;
+    if(r.singlesPlayer) text += `Singles: ${r.singlesPlayer}\n`;
+    if(r.sweepTeam) text += `Sweep by ${r.sweepTeam==='A'?seatLabel(0)+' & '+seatLabel(2):seatLabel(1)+' & '+seatLabel(3)}\n`;
+    text += `Score after: ${scoreTxt}\n\n`;
+  }
+  copyToClipboard(text, 'History copied to clipboard!');
+});
+
+/* ---------------- OTHER UI ---------------- */
 document.getElementById('newGameBtn').addEventListener('click', ()=>{
   if(!G || !G.round) return;
   const rd = G.round;
